@@ -51,8 +51,9 @@ class FileAction {
 				$tmpwavlengthfile = fopen($c . "/tmp/wavlength.tmp" ,"w+");
 				$tmpfile = fopen($c . "/tmp/conv.tmp" ,"w+");
 				$controller->generateconvertedseriffile($sheet, $tmpfile);
-				$controller->getwavlength("tmp/*.wav", $tmpwavlengthfile);
-				$wavtmpfile = fopen("wavlength.tmp", "w+");
+				$controller->getWavLength("/var/www/html/controller/tmp/*", $tmpwavlengthfile);
+                fclose($tmpwavlengthfile);
+				$wavTmpFile = fopen("wavlength.tmp", "w+");
 				$controller->fileInit($outputFile);
     			$controller->WriteSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
 

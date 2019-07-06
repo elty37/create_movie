@@ -296,9 +296,9 @@ class CreateEXOController{
 	}
 
 
-	public function getWavLength($filePath, $fp) {
-        foreach(glob($filePath) as $file){
-            if(is_file($file)){
+	public function getWavLength($filePath, $fpout) {
+        foreach (glob('/var/www/html/controller/tmp/{*.wav}',GLOB_BRACE) as $file) {
+            if (is_file($file)) {
                 $fp = fopen($file, 'r');
                 if (fread($fp,4) == "RIFF") {
                     fseek($fp, 20);
@@ -313,9 +313,10 @@ class CreateEXOController{
                     $data = unpack('Vdatasize',$rawheader);
                     $sec = $data["datasize"]/$header["bytespersec"];
                     $minutes = intval(($sec / 60) % 60);
-                    $seconds = intval($sec % 60);
+					$seconds = intval($sec % 60);
+					error_log($file, 3, "tmp/error_log");			
+                    fwrite($fpout, str_replace( ".wav", "", str_replace("/var/www/html/controller/tmp/" , "" , $file)) . " " . ($seconds + $minites * 60) * 30 . "\n");
                     fclose($fp);
-                    return $seconds + $minites * 60;
                 }
             }
         }
