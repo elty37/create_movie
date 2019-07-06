@@ -54,7 +54,7 @@ class FileAction {
 				$controller->getwavlength("tmp/*.wav", $tmpwavlengthfile);
 				$wavtmpfile = fopen("wavlength.tmp", "w+");
 				$controller->fileInit($outputFile);
-    				$controller->WriteSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
+    			$controller->WriteSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
 
 			//	$controller->removeFile($fp);
 			//	$exo = $controller->createEXOFile($convertedArray);
