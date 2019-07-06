@@ -1,5 +1,5 @@
 <?php
-require_once "/var/www/html/movie_create/vendor/autoload.php";
+require_once "/var/www/html/vendor/autoload.php";
 
 class CreateEXOController{
 
@@ -61,14 +61,13 @@ class CreateEXOController{
 		$positionX["風奈"]   =  "-86";
 		$positionX["桜"]     =  "-86";
 		$positionX["さくら"] = "-86";
-
 		$positionY["風奈"]   = "316";
 		$positionY["桜"]     = "316";
 		$positionY["さくら"] = "316";
 
-		for($i = 0;$i<count($positionX);$i++) {
-			if(isset($positionX[$fileName])) {
-				$positionReturn = $positionX[$fileName] . "," . $positionY[$fileName];
+		foreach($positionX as $key => $value) {
+			if(strpos($fileName, $key) !== false) {
+				$positionReturn = $positionX[$key] . "," . $positionY[$key];
 			}
 		}
 		return $positionReturn;
@@ -87,11 +86,11 @@ class CreateEXOController{
 		$positionY["風奈"]   = "56";
 		$positionY["桜"]     = "56";
 		$positionY["さくら制服"] = "56";
-		$positionX["干物風奈"] = "56";
+		$positionY["干物風奈"] = "56";
 
-		for($i = 0;$i<count($positionX);$i++) {
-			if(isset($positionX[$fileName])) {
-				$positionReturn = $positionX[$fileName] . "," . $positionY[$fileName];
+		foreach($positionX as $key => $value) {
+			if(strpos($fileName, $key) !== false) {
+				$positionReturn = $positionX[$key] . "," . $positionY[$key];
 			}
 		}
 
@@ -297,25 +296,29 @@ class CreateEXOController{
 	}
 
 
-	private function getWavLength($file) {
-		$fp = fopen($file, 'r');
-		if (fread($fp,4) == "RIFF") {
-			fseek($fp, 20);
-			$rawheader = fread($fp, 16);
-			$header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits',$rawheader);
-			$pos = ftell($fp);
-			while (fread($fp,4) != "data" && !feof($fp)) {
-				$pos++;
-				fseek($fp,$pos);
-			}
-			$rawheader = fread($fp, 4);
-			$data = unpack('Vdatasize',$rawheader);
-			$sec = $data["datasize"]/$header["bytespersec"];
-			$minutes = intval(($sec / 60) % 60);
-			$seconds = intval($sec % 60);
-			fclose($fp);
-			return $seconds + $minites * 60;
-		}
+	public function getWavLength($filePath, $fp) {
+        foreach(glob($filePath) as $file){
+            if(is_file($file)){
+                $fp = fopen($file, 'r');
+                if (fread($fp,4) == "RIFF") {
+                    fseek($fp, 20);
+                    $rawheader = fread($fp, 16);
+                    $header = unpack('vtype/vchannels/Vsamplerate/Vbytespersec/valignment/vbits',$rawheader);
+                    $pos = ftell($fp);
+                    while (fread($fp,4) != "data" && !feof($fp)) {
+                        $pos++;
+                        fseek($fp,$pos);
+                    }
+                    $rawheader = fread($fp, 4);
+                    $data = unpack('Vdatasize',$rawheader);
+                    $sec = $data["datasize"]/$header["bytespersec"];
+                    $minutes = intval(($sec / 60) % 60);
+                    $seconds = intval($sec % 60);
+                    fclose($fp);
+                    return $seconds + $minites * 60;
+                }
+            }
+        }
 	}
 	public function searchWavLength($lines, $fileName){
 		foreach($lines as $line){
@@ -332,7 +335,7 @@ class CreateEXOController{
 	public function readXlsx($readFile)
 	{
 		$reader = new PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-		$spreadsheet = $reader->load("/var/www/html/movie_create/" . $readFile);
+		$spreadsheet = $reader->load("/var/www/html/" . $readFile);
 		$sheet = $spreadsheet->getSheet(0);
 		//B2のセルの値
 		$data = $sheet->rangeToArray("C3:H175");
@@ -379,9 +382,10 @@ class CreateEXOController{
 				}else{
 					$pos = $this->convertImagePositionLecture($fileName);
 				}
+                $tmppos = $pos;
 				$pos = explode(",", $pos);
-				$posX = pos[0];
-				$posY = pos[1];
+				$posX = $pos[0];
+				$posY = $pos[1];
 			}else{
 				$filePath = "skip";
 				$posX = "";

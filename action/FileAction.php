@@ -1,6 +1,6 @@
 <?php
-require_once "/var/www/html/movie_create/controller/CreateEXOController.php";
-require_once "/var/www/html/movie_create/entity/InputFileInfo.php";
+require_once "/var/www/html/controller/CreateEXOController.php";
+require_once "/var/www/html/entity/InputFileInfo.php";
 
 
 class FileAction {
@@ -51,7 +51,7 @@ class FileAction {
 				$tmpwavlengthfile = fopen($c . "/tmp/wavlength.tmp" ,"w+");
 				$tmpfile = fopen($c . "/tmp/conv.tmp" ,"w+");
 				$controller->generateconvertedseriffile($sheet, $tmpfile);
-				$controller->getwavlength($tmpwavlengthfile);
+				$controller->getwavlength("tmp/*.wav", $tmpwavlengthfile);
 				$wavtmpfile = fopen("wavlength.tmp", "w+");
 				$controller->fileInit($outputFile);
     				$controller->WriteSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);

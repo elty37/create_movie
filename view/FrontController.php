@@ -1,6 +1,6 @@
 <?php
 //set_ini('error_log', '/var/www/logs/movie_create/debug.log');
-require_once "/var/www/html/movie_create/action/FileAction.php";
+require_once "/var/www/html/action/FileAction.php";
 
 $actionId = isset($_POST["actionId"]) ? $_POST["actionId"] : false;
 
