@@ -1,0 +1,14 @@
+{
+    "autoload": {
+        "psr-4": {
+           "controller\\": "controller/",
+           "action\\": "action/",
+           "view\\": "view/"
+
+
+        }
+    },
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.7"
+    }
+}
