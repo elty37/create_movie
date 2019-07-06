@@ -53,18 +53,18 @@ class CreateEXOController{
 		header('Content-Disposition: attachment; filename="'.$filename.'"');
 		readfile($filepath);
 	}
-	//$B2r@b%b!<%I$N(Bposition$BJQ49(B
+	//解説モードのposition変換
 	private function convertImagePositionLecture($fileName){
 		$positionX = array();
 		$positionY = array();
 
-		$positionX["$BIwF`(B"]   =  "-86";
-		$positionX["$B:y(B"]     =  "-86";
-		$positionX["$B$5$/$i(B"] = "-86";
+		$positionX["風奈"]   =  "-86";
+		$positionX["桜"]     =  "-86";
+		$positionX["さくら"] = "-86";
 
-		$positionY["$BIwF`(B"]   = "316";
-		$positionY["$B:y(B"]     = "316";
-		$positionY["$B$5$/$i(B"] = "316";
+		$positionY["風奈"]   = "316";
+		$positionY["桜"]     = "316";
+		$positionY["さくら"] = "316";
 
 		for($i = 0;$i<count($positionX);$i++) {
 			if(isset($positionX[$fileName])) {
@@ -74,20 +74,20 @@ class CreateEXOController{
 		return $positionReturn;
 	}
 
-	//$B4pK\%b!<%I$N(Bposition$BJQ49(B
+	//基本モードのposition変換
 	public function convertImagePosition($fileName){
 		$positionX = array();
 		$positionY = array();
 
-		$positionX["$BIwF`(B"]   =  "-193";
-		$positionX["$B:y(B"]     =  "-193";
-		$positionX["$B43J*IwF`(B"] = "193";
-		$positionX["$B$5$/$i@)I~(B"] = "240";
+		$positionX["風奈"]   =  "-193";
+		$positionX["桜"]     =  "-193";
+		$positionX["干物風奈"] = "193";
+		$positionX["さくら制服"] = "240";
 
-		$positionY["$BIwF`(B"]   = "56";
-		$positionY["$B:y(B"]     = "56";
-		$positionY["$B$5$/$i@)I~(B"] = "56";
-		$positionX["$B43J*IwF`(B"] = "56";
+		$positionY["風奈"]   = "56";
+		$positionY["桜"]     = "56";
+		$positionY["さくら制服"] = "56";
+		$positionX["干物風奈"] = "56";
 
 		for($i = 0;$i<count($positionX);$i++) {
 			if(isset($positionX[$fileName])) {
@@ -98,8 +98,8 @@ class CreateEXOController{
 		return $positionReturn;
 	}
 
-	//$B=PNO%U%!%$%k=i4|@_Dj(B
-	//outputFile $B=PNO%U%!%$%k%*%V%8%'%/%H(B
+	//出力ファイル初期設定
+	//outputFile 出力ファイルオブジェクト
 	public function fileInit($outputFile){
 		$init = "[exedit]" .  "\n" . "width=640" .  "\n" . "height=480" .  "\n" . "rate=" . self::FRAMERATE .  "\n" . "scale=1" .  "\n" . "length=4055" .  "\n" . "audio_rate=44100" .  "\n" . "audio_ch=2";
 		$fwrite = fwrite($outputFile, $init);
@@ -109,17 +109,17 @@ class CreateEXOController{
 		return true;
 	}
 
-	//$B%F%-%9%H@.7A(B
+	//テキスト成形
 	public function setText($text, $newText){
 		return $text . $newText . "\n";
 	}
-	//$B9V5A%b!<%I$N%-%c%i$r=PNO(B
-	//$outputFile $B=PNO%U%!%$%k%*%V%8%'%/%H(B
-	//$filePath $B%(%s%3!<%I$7$?%;%j%U(B
-	//$serifNumber [NNN]$B$KF~$k?t(B
-	//$layer $B%l%$%d(B
-	//$startPoint $B3+;O%U%l!<%`(B
-	//$endPoint $B=*N;%U%l!<%`(B
+	//講義モードのキャラを出力
+	//$outputFile 出力ファイルオブジェクト
+	//$filePath エンコードしたセリフ
+	//$serifNumber [NNN]に入る数
+	//$layer レイヤ
+	//$startPoint 開始フレーム
+	//$endPoint 終了フレーム
 	//$posX X
 	//$posY Y
 	public function convertImageLecture($outputFile,$filePath,$serifNumber,$layer,$startPoint,$endPoint,$posX,$posY){
@@ -131,53 +131,53 @@ class CreateEXOController{
 		$formattedSerif = setText($formattedSerif , "overlay=1");
 		$formattedSerif = setText($formattedSerif , "camera=0");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=$B2hA|%U%!%$%k(B");
+		$formattedSerif = setText($formattedSerif , "_name=画像ファイル");
 		$formattedSerif = setText($formattedSerif , "file=" . $filePath);
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=$B%^%9%/(B");
+		$formattedSerif = setText($formattedSerif , "_name=マスク");
 		$formattedSerif = setText($formattedSerif , "X=0.0");
 		$formattedSerif = setText($formattedSerif , "Y=-174.8 ");
-		$formattedSerif = setText($formattedSerif , "$B2sE>(B=0.00");
-		$formattedSerif = setText($formattedSerif , "$B%5%$%:(B=155");
-		$formattedSerif = setText($formattedSerif , "$B=D2#Hf(B=0.0");
-		$formattedSerif = setText($formattedSerif , "$B$\$+$7(B=0");
-		$formattedSerif = setText($formattedSerif , "$B%^%9%/$NH?E>(B=0");
-		$formattedSerif = setText($formattedSerif , "$B85$N%5%$%:$K9g$o$;$k(B=0");
+		$formattedSerif = setText($formattedSerif , "回転=0.00");
+		$formattedSerif = setText($formattedSerif , "サイズ=155");
+		$formattedSerif = setText($formattedSerif , "縦横比=0.0");
+		$formattedSerif = setText($formattedSerif , "ぼかし=0");
+		$formattedSerif = setText($formattedSerif , "マスクの反転=0");
+		$formattedSerif = setText($formattedSerif , "元のサイズに合わせる=0");
 		$formattedSerif = setText($formattedSerif , "type=5");
 		$formattedSerif = setText($formattedSerif , "name=");
 		$formattedSerif = setText($formattedSerif , "mode=0");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".2]");
-		$formattedSerif = setText($formattedSerif , "_name=$B1o<h$j(B");
+		$formattedSerif = setText($formattedSerif , "_name=縁取り");
 		$formattedSerif = setText($formattedSerif , "_disable=1");
-		$formattedSerif = setText($formattedSerif , "$B%5%$%:(B=3");
-		$formattedSerif = setText($formattedSerif , "$B$\$+$7(B=10");
+		$formattedSerif = setText($formattedSerif , "サイズ=3");
+		$formattedSerif = setText($formattedSerif , "ぼかし=10");
 		$formattedSerif = setText($formattedSerif , "color=00ff00");
 		$formattedSerif = setText($formattedSerif , "file=");
-		$formattedSerif = setText($formattedSerif , "$B$\$+$7(B=10");
+		$formattedSerif = setText($formattedSerif , "ぼかし=10");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".3]");
-		$formattedSerif = setText($formattedSerif , "_name=$B%/%j%C%T%s%0(B");
-		$formattedSerif = setText($formattedSerif , "$B>e(B=107");
-		$formattedSerif = setText($formattedSerif , "$B2<(B=456");
-		$formattedSerif = setText($formattedSerif , "$B:8(B=136");
-		$formattedSerif = setText($formattedSerif , "$B1&(B=146");
-		$formattedSerif = setText($formattedSerif , "$BCf?4$N0LCV$rJQ99(B=0");
+		$formattedSerif = setText($formattedSerif , "_name=クリッピング");
+		$formattedSerif = setText($formattedSerif , "上=107");
+		$formattedSerif = setText($formattedSerif , "下=456");
+		$formattedSerif = setText($formattedSerif , "左=136");
+		$formattedSerif = setText($formattedSerif , "右=146");
+		$formattedSerif = setText($formattedSerif , "中心の位置を変更=0");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".4]");
-		$formattedSerif = setText($formattedSerif , "_name=$BI8=`IA2h(B");
+		$formattedSerif = setText($formattedSerif , "_name=標準描画");
 		$formattedSerif = setText($formattedSerif , "X=" . $posX);
 		$formattedSerif = setText($formattedSerif , "Y=" . $posY);
-		$formattedSerif = setText($formattedSerif , "$B3HBgN((B=75.00");
-		$formattedSerif = setText($formattedSerif , "$BF)L@EY(B=0.0");
-		$formattedSerif = setText($formattedSerif , "$B2sE>(B=0.00");
+		$formattedSerif = setText($formattedSerif , "拡大率=75.00");
+		$formattedSerif = setText($formattedSerif , "透明度=0.0");
+		$formattedSerif = setText($formattedSerif , "回転=0.00");
 		$formattedSerif = $formattedSerif . "blend=0";
 		fwrite($outputFile, $formattedSerif);
 	}
-	//$BF|>o%b!<%I$N%-%c%i$r=PNO(B
-	//$outputFile $B=PNO%U%!%$%k%*%V%8%'%/%H(B
-	//$filePath $B%(%s%3!<%I$7$?%;%j%U(B
-	//$serifNumber [NNN]$B$KF~$k?t(B
-	//$layer $B%l%$%d(B
-	//$startPoint $B3+;O%U%l!<%`(B
-	//$endPoint $B=*N;%U%l!<%`(B
+	//日常モードのキャラを出力
+	//$outputFile 出力ファイルオブジェクト
+	//$filePath エンコードしたセリフ
+	//$serifNumber [NNN]に入る数
+	//$layer レイヤ
+	//$startPoint 開始フレーム
+	//$endPoint 終了フレーム
 	//$posX X
 	//$posY Y
 	public function convertImage($outputFile,$filePath,$serifNumber,$layer,$startPoint,$endPoint,$posX,$posY) {
@@ -190,27 +190,27 @@ class CreateEXOController{
 		$formattedSerif = setText($formattedSerif , "overlay=1");
 		$formattedSerif = setText($formattedSerif , "camera=0");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=$B2hA|%U%!%$%k(B");
+		$formattedSerif = setText($formattedSerif , "_name=画像ファイル");
 		$formattedSerif = setText($formattedSerif , "file=" . $filePath);
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=$BI8=`IA2h(B");
+		$formattedSerif = setText($formattedSerif , "_name=標準描画");
 		$formattedSerif = setText($formattedSerif , "X=" . $posX);
 		$formattedSerif = setText($formattedSerif , "Y=" . $posY);
-		$formattedSerif = setText($formattedSerif , "$B3HBgN((B=75.00");
-		$formattedSerif = setText($formattedSerif , "$BF)L@EY(B=0.0");
-		$formattedSerif = setText($formattedSerif , "$B2sE>(B=0.00");
+		$formattedSerif = setText($formattedSerif , "拡大率=75.00");
+		$formattedSerif = setText($formattedSerif , "透明度=0.0");
+		$formattedSerif = setText($formattedSerif , "回転=0.00");
 		$formattedSerif = $formattedSerif . "blend=0";
 		fwrite($outputFile, $formattedSerif);
 	}
 
-	//$B%;%j%U$r=PNO(B
-	//$outputFile $B=PNO%U%!%$%k%*%V%8%'%/%H(B
-	//serif $B%(%s%3!<%I$7$?%;%j%U(B
-	//$serifNumber [NNN]$B$KF~$k?t(B
-	//$layer $B%l%$%d(B
-	//$startPoint $B3+;O%U%l!<%`(B
-	//$endPoint $B=*N;%U%l!<%`(B
-	//$color $BJ8;z?'(B
+	//セリフを出力
+	//$outputFile 出力ファイルオブジェクト
+	//serif エンコードしたセリフ
+	//$serifNumber [NNN]に入る数
+	//$layer レイヤ
+	//$startPoint 開始フレーム
+	//$endPoint 終了フレーム
+	//$color 文字色
 	public function convertSerif($outputFile,$serif,$serifNumber,$layer,$startPoint,$endPoint,$color) {
 		$formattedSerif = "";
 		$formattedSerif = setText($formattedSerif ,"[" . $serifNumber . "]");
@@ -220,12 +220,12 @@ class CreateEXOController{
 		$formattedSerif = setText($formattedSerif , "overlay=1");
 		$formattedSerif = setText($formattedSerif , "camera=0");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=$B%F%-%9%H(B");
-		$formattedSerif = setText($formattedSerif , "$B%5%$%:(B=34");
-		$formattedSerif = setText($formattedSerif , "$BI=<(B.EY(B=0.0");
-		$formattedSerif = setText($formattedSerif , "$BJ8;zKh$K8DJL%*%V%8%'%/%H(B=0");
-		$formattedSerif = setText($formattedSerif , "$B0\F0:BI8>e$KI=<($9$k(B=0");
-		$formattedSerif = setText($formattedSerif , "$B<+F0%9%/%m!<%k(B=0");
+		$formattedSerif = setText($formattedSerif , "_name=テキスト");
+		$formattedSerif = setText($formattedSerif , "サイズ=34");
+		$formattedSerif = setText($formattedSerif , "表示速度=0.0");
+		$formattedSerif = setText($formattedSerif , "文字毎に個別オブジェクト=0");
+		$formattedSerif = setText($formattedSerif , "移動座標上に表示する=0");
+		$formattedSerif = setText($formattedSerif , "自動スクロール=0");
 		$formattedSerif = setText($formattedSerif , "B=0");
 		$formattedSerif = setText($formattedSerif , "I=0");
 		$formattedSerif = setText($formattedSerif , "type=0");
@@ -238,28 +238,28 @@ class CreateEXOController{
 		$formattedSerif = setText($formattedSerif , "precision=1");
 		$formattedSerif = setText($formattedSerif , "color=" . $color);
 		$formattedSerif = setText($formattedSerif , "color2=000000");
-		$formattedSerif = setText($formattedSerif , 'font=$B$"$:$-%U%)%s%H(B');
+		$formattedSerif = setText($formattedSerif , 'font=あずきフォント');
 		$formattedSerif = setText($formattedSerif , "text=" . $serif);
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=$BI8=`IA2h(B");
+		$formattedSerif = setText($formattedSerif , "_name=標準描画");
 		$formattedSerif = setText($formattedSerif , "X=-310.0");
 		$formattedSerif = setText($formattedSerif , "Y=142.0");
 		$formattedSerif = setText($formattedSerif , "Z=0.0");
-		$formattedSerif = setText($formattedSerif , "$B3HBgN((B=80.00");
-		$formattedSerif = setText($formattedSerif , "$BF)L@EY(B=0.0");
-		$formattedSerif = setText($formattedSerif , "$B2sE>(B=0.00");
+		$formattedSerif = setText($formattedSerif , "拡大率=80.00");
+		$formattedSerif = setText($formattedSerif , "透明度=0.0");
+		$formattedSerif = setText($formattedSerif , "回転=0.00");
 		$formattedSerif = $formattedSerif . "blend=0";
 		fwrite($outputFile, $formattedSerif);
 	}
 
-	//$B%;%j%U$r=PNO(B
-	//$outputFile $B=PNO%U%!%$%k%*%V%8%'%/%H(B
-	//serif $B%(%s%3!<%I$7$?%;%j%U(B
-	//$serifNumber [NNN]$B$KF~$k?t(B
-	//$layer $B%l%$%d(B
-	//$startPoint $B3+;O%U%l!<%`(B
-	//$endPoint $B=*N;%U%l!<%`(B
-	//$color $BJ8;z?'(B
+	//セリフを出力
+	//$outputFile 出力ファイルオブジェクト
+	//serif エンコードしたセリフ
+	//$serifNumber [NNN]に入る数
+	//$layer レイヤ
+	//$startPoint 開始フレーム
+	//$endPoint 終了フレーム
+	//$color 文字色
 	public function convertWav($outputFile,$wavFileName,$serifNumber,$layer,$startPoint,$endPoint) {
 
 		$formattedSerif = "";
@@ -270,26 +270,26 @@ class CreateEXOController{
 		$formattedSerif = setText($formattedSerif , "overlay=1");
 		$formattedSerif = setText($formattedSerif , "audio=1");
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=$B2;@<%U%!%$%k(B");
-		$formattedSerif = setText($formattedSerif , "$B:F@80LCV(B=0.00");
-		$formattedSerif = setText($formattedSerif , "$B:F@8B.EY(B=100.0");
-		$formattedSerif = setText($formattedSerif , "$B%k!<%W:F@8(B=0");
-		$formattedSerif = setText($formattedSerif , '$BF02h%U%!%$%k$HO"7H(B=0');
+		$formattedSerif = setText($formattedSerif , "_name=音声ファイル");
+		$formattedSerif = setText($formattedSerif , "再生位置=0.00");
+		$formattedSerif = setText($formattedSerif , "再生速度=100.0");
+		$formattedSerif = setText($formattedSerif , "ループ再生=0");
+		$formattedSerif = setText($formattedSerif , '動画ファイルと連携=0');
 		$formattedSerif = setText($formattedSerif , "file=C:\movie\character voice\current\\" . $wavFileName);
 		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=$BI8=`:F@8(B");
-		$formattedSerif = setText($formattedSerif , "$B2;NL(B=300.0");
-		$formattedSerif = $formattedSerif . "$B:81&(B=0.0";
+		$formattedSerif = setText($formattedSerif , "_name=標準再生");
+		$formattedSerif = setText($formattedSerif , "音量=300.0");
+		$formattedSerif = $formattedSerif . "左右=0.0";
 		fwrite($outputFile, $formattedSerif);
 	}
 
-	//$BIwF`(B :0
-	//$B:y(B   :1
-	//$B$=$NB>(B:99
+	//風奈 :0
+	//桜   :1
+	//その他:99
 	private function whoIsThis($charactor){
-		if($charactor == "$BIwF`(B") {
+		if($charactor == "風奈") {
 			return "0";
-		} elseif($charactor == "$B:y(B") {
+		} elseif($charactor == "桜") {
 			return "1";
 		} else {
 			return "99";
@@ -334,16 +334,16 @@ class CreateEXOController{
 		$reader = new PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 		$spreadsheet = $reader->load("/var/www/html/movie_create/" . $readFile);
 		$sheet = $spreadsheet->getSheet(0);
-		//B2$B$N%;%k$NCM(B
+		//B2のセルの値
 		$data = $sheet->rangeToArray("C3:H175");
 		return $data;
 
 	}
 
 	/**
-	* $BJ8;z%3!<%I$NJQ49(B(utf16$B$N%j%H%k%(%s%G%#%"%s(B)
-	* @param string $str $BJQ49J8;zNs(B
-	* @return string $BJQ49$5$l$?J8;zNs(B
+	* 文字コードの変換(utf16のリトルエンディアン)
+	* @param string $str 変換文字列
+	* @return string 変換された文字列
 	*/
 	private function convertSerifToHexUncodeText($str)
 	{
