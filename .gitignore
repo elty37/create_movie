@@ -4,5 +4,7 @@
 Vagrantfile
 .vagrant/*
 *.tmp
-action/tmp/*.tmp
+*.exo
+action/tmp/*.*
 controller/tmp/*.wav
+error_log
