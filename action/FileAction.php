@@ -37,7 +37,7 @@ class FileAction {
 		$error = [];
 		if($this->validate($fileInputInfo, $error)) {
 //			try{
-				$readFile = "test2.xlsx";
+				$readFile = "test3.xlsx";
 				$controller = new CreateEXOController();
 			//	$controller->readXlsx($readFile)
 
@@ -49,17 +49,16 @@ class FileAction {
 				$wavOutputFile = fopen($c . "/tmp/out2.exo" ,"w+");
 				$charactorImageOutputFile = fopen($c . "/tmp/out3.exo" ,"w+");
 				$tmpwavlengthfile = fopen($c . "/tmp/wavlength.tmp" ,"w+");
-				$tmpfile = fopen($c . "/tmp/conv.tmp" ,"w+");
-				$controller->generateconvertedseriffile($sheet, $tmpfile);
+				$tmpFile = fopen($c . "/tmp/conv.tmp" ,"w+");
+				$controller->generateConvertedSerifFile($sheet, $tmpFile);
+				fclose($tmpFile);
+				$tmpFile = fopen($c . "/tmp/conv.tmp" ,"r+");
 				$controller->getWavLength("/var/www/html/controller/tmp/*", $tmpwavlengthfile);
                 fclose($tmpwavlengthfile);
-				$wavTmpFile = fopen("wavlength.tmp", "w+");
+				$wavTmpFile = fopen($c . "/tmp/wavlength.tmp", "r+");
 				$controller->fileInit($outputFile);
-    			$controller->WriteSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
-
-			//	$controller->removeFile($fp);
-			//	$exo = $controller->createEXOFile($convertedArray);
-			//	$controller->downloadEXOFile($exo);
+    			$controller->writeSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
+				return array();
 			
 /*			}catch(Exception $e){
 				return $error;

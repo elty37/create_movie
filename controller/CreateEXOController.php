@@ -6,8 +6,8 @@ class CreateEXOController{
 	const FRAMERATE = 30;
 	const MESSAGE_MAX = 200;
 	const VOICE_BUFFER = 45;
-	const LECTURE_START = 30002;
-	const LECTURE_END = 30043;
+	const LECTURE_START = 20011;
+	const LECTURE_END = 20139;
 	const HUUNA_SERIF_COLOR = "f6f694";
 	const SAKURA_SERIF_COLOR = "ffadb4";
 	const DEFAULT_SERIF_COLOR = "ffffff";
@@ -100,7 +100,8 @@ class CreateEXOController{
 	//出力ファイル初期設定
 	//outputFile 出力ファイルオブジェクト
 	public function fileInit($outputFile){
-		$init = "[exedit]" .  "\n" . "width=640" .  "\n" . "height=480" .  "\n" . "rate=" . self::FRAMERATE .  "\n" . "scale=1" .  "\n" . "length=4055" .  "\n" . "audio_rate=44100" .  "\n" . "audio_ch=2";
+		$init = "[exedit]" .  "\r\n" . "width=640" .  "\r\n" . "height=480" .  "\r\n" . "rate=" . self::FRAMERATE .  "\r\n" . "scale=1" .  "\r\n" . "length=4055" .  "\r\n" . "audio_rate=44100" .  "\r\n" . "audio_ch=2" .  "\r\n";
+		$init = mb_convert_encoding($init, 'SJIS-win', 'UTF-8');
 		$fwrite = fwrite($outputFile, $init);
 		if ($fwrite === false) {
 			return false;
@@ -110,7 +111,7 @@ class CreateEXOController{
 
 	//テキスト成形
 	public function setText($text, $newText){
-		return $text . $newText . "\n";
+		return $text . $newText . "\r\n";
 	}
 	//講義モードのキャラを出力
 	//$outputFile 出力ファイルオブジェクト
@@ -123,51 +124,52 @@ class CreateEXOController{
 	//$posY Y
 	public function convertImageLecture($outputFile,$filePath,$serifNumber,$layer,$startPoint,$endPoint,$posX,$posY){
 		$formattedSerif = "";
-		$formattedSerif = setText($formattedSerif ,"[" . $serifNumber . "]");
-		$formattedSerif = setText($formattedSerif , "start=" . $startPoint);
-		$formattedSerif = setText($formattedSerif , "end=" . $endPoint);
-		$formattedSerif = setText($formattedSerif , "layer=" . $layer);
-		$formattedSerif = setText($formattedSerif , "overlay=1");
-		$formattedSerif = setText($formattedSerif , "camera=0");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=画像ファイル");
-		$formattedSerif = setText($formattedSerif , "file=" . $filePath);
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=マスク");
-		$formattedSerif = setText($formattedSerif , "X=0.0");
-		$formattedSerif = setText($formattedSerif , "Y=-174.8 ");
-		$formattedSerif = setText($formattedSerif , "回転=0.00");
-		$formattedSerif = setText($formattedSerif , "サイズ=155");
-		$formattedSerif = setText($formattedSerif , "縦横比=0.0");
-		$formattedSerif = setText($formattedSerif , "ぼかし=0");
-		$formattedSerif = setText($formattedSerif , "マスクの反転=0");
-		$formattedSerif = setText($formattedSerif , "元のサイズに合わせる=0");
-		$formattedSerif = setText($formattedSerif , "type=5");
-		$formattedSerif = setText($formattedSerif , "name=");
-		$formattedSerif = setText($formattedSerif , "mode=0");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".2]");
-		$formattedSerif = setText($formattedSerif , "_name=縁取り");
-		$formattedSerif = setText($formattedSerif , "_disable=1");
-		$formattedSerif = setText($formattedSerif , "サイズ=3");
-		$formattedSerif = setText($formattedSerif , "ぼかし=10");
-		$formattedSerif = setText($formattedSerif , "color=00ff00");
-		$formattedSerif = setText($formattedSerif , "file=");
-		$formattedSerif = setText($formattedSerif , "ぼかし=10");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".3]");
-		$formattedSerif = setText($formattedSerif , "_name=クリッピング");
-		$formattedSerif = setText($formattedSerif , "上=107");
-		$formattedSerif = setText($formattedSerif , "下=456");
-		$formattedSerif = setText($formattedSerif , "左=136");
-		$formattedSerif = setText($formattedSerif , "右=146");
-		$formattedSerif = setText($formattedSerif , "中心の位置を変更=0");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".4]");
-		$formattedSerif = setText($formattedSerif , "_name=標準描画");
-		$formattedSerif = setText($formattedSerif , "X=" . $posX);
-		$formattedSerif = setText($formattedSerif , "Y=" . $posY);
-		$formattedSerif = setText($formattedSerif , "拡大率=75.00");
-		$formattedSerif = setText($formattedSerif , "透明度=0.0");
-		$formattedSerif = setText($formattedSerif , "回転=0.00");
-		$formattedSerif = $formattedSerif . "blend=0";
+		$formattedSerif = $this->setText($formattedSerif ,"[" . $serifNumber . "]");
+		$formattedSerif = $this->setText($formattedSerif , "start=" . $startPoint);
+		$formattedSerif = $this->setText($formattedSerif , "end=" . $endPoint);
+		$formattedSerif = $this->setText($formattedSerif , "layer=" . $layer);
+		$formattedSerif = $this->setText($formattedSerif , "overlay=1");
+		$formattedSerif = $this->setText($formattedSerif , "camera=0");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".0]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=画像ファイル");
+		$formattedSerif = $this->setText($formattedSerif , "file=" . $filePath);
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".1]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=マスク");
+		$formattedSerif = $this->setText($formattedSerif , "X=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "Y=-174.8 ");
+		$formattedSerif = $this->setText($formattedSerif , "回転=0.00");
+		$formattedSerif = $this->setText($formattedSerif , "サイズ=155");
+		$formattedSerif = $this->setText($formattedSerif , "縦横比=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "ぼかし=0");
+		$formattedSerif = $this->setText($formattedSerif , "マスクの反転=0");
+		$formattedSerif = $this->setText($formattedSerif , "元のサイズに合わせる=0");
+		$formattedSerif = $this->setText($formattedSerif , "type=5");
+		$formattedSerif = $this->setText($formattedSerif , "name=");
+		$formattedSerif = $this->setText($formattedSerif , "mode=0");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".2]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=縁取り");
+		$formattedSerif = $this->setText($formattedSerif , "_disable=1");
+		$formattedSerif = $this->setText($formattedSerif , "サイズ=3");
+		$formattedSerif = $this->setText($formattedSerif , "ぼかし=10");
+		$formattedSerif = $this->setText($formattedSerif , "color=00ff00");
+		$formattedSerif = $this->setText($formattedSerif , "file=");
+		$formattedSerif = $this->setText($formattedSerif , "ぼかし=10");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".3]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=クリッピング");
+		$formattedSerif = $this->setText($formattedSerif , "上=107");
+		$formattedSerif = $this->setText($formattedSerif , "下=456");
+		$formattedSerif = $this->setText($formattedSerif , "左=136");
+		$formattedSerif = $this->setText($formattedSerif , "右=146");
+		$formattedSerif = $this->setText($formattedSerif , "中心の位置を変更=0");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".4]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=標準描画");
+		$formattedSerif = $this->setText($formattedSerif , "X=" . $posX);
+		$formattedSerif = $this->setText($formattedSerif , "Y=" . $posY);
+		$formattedSerif = $this->setText($formattedSerif , "拡大率=75.00");
+		$formattedSerif = $this->setText($formattedSerif , "透明度=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "回転=0.00");
+		$formattedSerif = $this->setText($formattedSerif , "blend=0");
+		$formattedSerif = mb_convert_encoding($formattedSerif, 'SJIS-win', 'UTF-8');
 		fwrite($outputFile, $formattedSerif);
 	}
 	//日常モードのキャラを出力
@@ -180,25 +182,26 @@ class CreateEXOController{
 	//$posX X
 	//$posY Y
 	public function convertImage($outputFile,$filePath,$serifNumber,$layer,$startPoint,$endPoint,$posX,$posY) {
-
+		error_log($posX , 3, "/var/www/html/error_log");
 		$formattedSerif = "";
-		$formattedSerif = setText($formattedSerif ,"[" . $serifNumber . "]");
-		$formattedSerif = setText($formattedSerif , "start=" . $startPoint);
-		$formattedSerif = setText($formattedSerif , "end=" . $endPoint);
-		$formattedSerif = setText($formattedSerif , "layer=" . $layer);
-		$formattedSerif = setText($formattedSerif , "overlay=1");
-		$formattedSerif = setText($formattedSerif , "camera=0");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=画像ファイル");
-		$formattedSerif = setText($formattedSerif , "file=" . $filePath);
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=標準描画");
-		$formattedSerif = setText($formattedSerif , "X=" . $posX);
-		$formattedSerif = setText($formattedSerif , "Y=" . $posY);
-		$formattedSerif = setText($formattedSerif , "拡大率=75.00");
-		$formattedSerif = setText($formattedSerif , "透明度=0.0");
-		$formattedSerif = setText($formattedSerif , "回転=0.00");
-		$formattedSerif = $formattedSerif . "blend=0";
+		$formattedSerif = $this->setText($formattedSerif ,"[" . $serifNumber . "]");
+		$formattedSerif = $this->setText($formattedSerif , "start=" . $startPoint);
+		$formattedSerif = $this->setText($formattedSerif , "end=" . $endPoint);
+		$formattedSerif = $this->setText($formattedSerif , "layer=" . $layer);
+		$formattedSerif = $this->setText($formattedSerif , "overlay=1");
+		$formattedSerif = $this->setText($formattedSerif , "camera=0");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".0]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=画像ファイル");
+		$formattedSerif = $this->setText($formattedSerif , "file=" . $filePath);
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".1]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=標準描画");
+		$formattedSerif = $this->setText($formattedSerif , "X=" . $posX);
+		$formattedSerif = $this->setText($formattedSerif , "Y=" . $posY);
+		$formattedSerif = $this->setText($formattedSerif , "拡大率=75.00");
+		$formattedSerif = $this->setText($formattedSerif , "透明度=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "回転=0.00");
+		$formattedSerif = $this->setText($formattedSerif , "blend=0");
+		$formattedSerif = mb_convert_encoding($formattedSerif, 'SJIS-win', 'UTF-8');
 		fwrite($outputFile, $formattedSerif);
 	}
 
@@ -212,42 +215,43 @@ class CreateEXOController{
 	//$color 文字色
 	public function convertSerif($outputFile,$serif,$serifNumber,$layer,$startPoint,$endPoint,$color) {
 		$formattedSerif = "";
-		$formattedSerif = setText($formattedSerif ,"[" . $serifNumber . "]");
-		$formattedSerif = setText($formattedSerif , "start=" . $startPoint);
-		$formattedSerif = setText($formattedSerif , "end=" . $endPoint);
-		$formattedSerif = setText($formattedSerif , "layer=" . $layer);
-		$formattedSerif = setText($formattedSerif , "overlay=1");
-		$formattedSerif = setText($formattedSerif , "camera=0");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=テキスト");
-		$formattedSerif = setText($formattedSerif , "サイズ=34");
-		$formattedSerif = setText($formattedSerif , "表示速度=0.0");
-		$formattedSerif = setText($formattedSerif , "文字毎に個別オブジェクト=0");
-		$formattedSerif = setText($formattedSerif , "移動座標上に表示する=0");
-		$formattedSerif = setText($formattedSerif , "自動スクロール=0");
-		$formattedSerif = setText($formattedSerif , "B=0");
-		$formattedSerif = setText($formattedSerif , "I=0");
-		$formattedSerif = setText($formattedSerif , "type=0");
-		$formattedSerif = setText($formattedSerif , "autoadjust=0");
-		$formattedSerif = setText($formattedSerif , "soft=1");
-		$formattedSerif = setText($formattedSerif , "monospace=0");
-		$formattedSerif = setText($formattedSerif , "align=0");
-		$formattedSerif = setText($formattedSerif , "spacing_x=0");
-		$formattedSerif = setText($formattedSerif , "spacing_y=0");
-		$formattedSerif = setText($formattedSerif , "precision=1");
-		$formattedSerif = setText($formattedSerif , "color=" . $color);
-		$formattedSerif = setText($formattedSerif , "color2=000000");
-		$formattedSerif = setText($formattedSerif , 'font=あずきフォント');
-		$formattedSerif = setText($formattedSerif , "text=" . $serif);
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=標準描画");
-		$formattedSerif = setText($formattedSerif , "X=-310.0");
-		$formattedSerif = setText($formattedSerif , "Y=142.0");
-		$formattedSerif = setText($formattedSerif , "Z=0.0");
-		$formattedSerif = setText($formattedSerif , "拡大率=80.00");
-		$formattedSerif = setText($formattedSerif , "透明度=0.0");
-		$formattedSerif = setText($formattedSerif , "回転=0.00");
-		$formattedSerif = $formattedSerif . "blend=0";
+		$formattedSerif = $this->setText($formattedSerif ,"[" . $serifNumber . "]");
+		$formattedSerif = $this->setText($formattedSerif , "start=" . $startPoint);
+		$formattedSerif = $this->setText($formattedSerif , "end=" . $endPoint);
+		$formattedSerif = $this->setText($formattedSerif , "layer=" . $layer);
+		$formattedSerif = $this->setText($formattedSerif , "overlay=1");
+		$formattedSerif = $this->setText($formattedSerif , "camera=0");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".0]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=テキスト");
+		$formattedSerif = $this->setText($formattedSerif , "サイズ=34");
+		$formattedSerif = $this->setText($formattedSerif , "表示速度=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "文字毎に個別オブジェクト=0");
+		$formattedSerif = $this->setText($formattedSerif , "移動座標上に表示する=0");
+		$formattedSerif = $this->setText($formattedSerif , "自動スクロール=0");
+		$formattedSerif = $this->setText($formattedSerif , "B=0");
+		$formattedSerif = $this->setText($formattedSerif , "I=0");
+		$formattedSerif = $this->setText($formattedSerif , "type=0");
+		$formattedSerif = $this->setText($formattedSerif , "autoadjust=0");
+		$formattedSerif = $this->setText($formattedSerif , "soft=1");
+		$formattedSerif = $this->setText($formattedSerif , "monospace=0");
+		$formattedSerif = $this->setText($formattedSerif , "align=0");
+		$formattedSerif = $this->setText($formattedSerif , "spacing_x=0");
+		$formattedSerif = $this->setText($formattedSerif , "spacing_y=0");
+		$formattedSerif = $this->setText($formattedSerif , "precision=1");
+		$formattedSerif = $this->setText($formattedSerif , "color=" . $color);
+		$formattedSerif = $this->setText($formattedSerif , "color2=000000");
+		$formattedSerif = $this->setText($formattedSerif , 'font=あずきフォント');
+		$formattedSerif = $formattedSerif . "text=" . $serif;
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".1]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=標準描画");
+		$formattedSerif = $this->setText($formattedSerif , "X=-310.0");
+		$formattedSerif = $this->setText($formattedSerif , "Y=142.0");
+		$formattedSerif = $this->setText($formattedSerif , "Z=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "拡大率=80.00");
+		$formattedSerif = $this->setText($formattedSerif , "透明度=0.0");
+		$formattedSerif = $this->setText($formattedSerif , "回転=0.00");
+		$formattedSerif = $this->setText($formattedSerif , "blend=0");
+		$formattedSerif = mb_convert_encoding($formattedSerif, 'SJIS-win', 'UTF-8');
 		fwrite($outputFile, $formattedSerif);
 	}
 
@@ -262,23 +266,24 @@ class CreateEXOController{
 	public function convertWav($outputFile,$wavFileName,$serifNumber,$layer,$startPoint,$endPoint) {
 
 		$formattedSerif = "";
-		$formattedSerif = setText($formattedSerif ,"[" . $serifNumber . "]");
-		$formattedSerif = setText($formattedSerif , "start=" . $startPoint);
-		$formattedSerif = setText($formattedSerif , "end=" . $endPoint);
-		$formattedSerif = setText($formattedSerif , "layer=" . $layer);
-		$formattedSerif = setText($formattedSerif , "overlay=1");
-		$formattedSerif = setText($formattedSerif , "audio=1");
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".0]");
-		$formattedSerif = setText($formattedSerif , "_name=音声ファイル");
-		$formattedSerif = setText($formattedSerif , "再生位置=0.00");
-		$formattedSerif = setText($formattedSerif , "再生速度=100.0");
-		$formattedSerif = setText($formattedSerif , "ループ再生=0");
-		$formattedSerif = setText($formattedSerif , '動画ファイルと連携=0');
-		$formattedSerif = setText($formattedSerif , "file=C:\movie\character voice\current\\" . $wavFileName);
-		$formattedSerif = setText($formattedSerif , "[" . $serifNumber . ".1]");
-		$formattedSerif = setText($formattedSerif , "_name=標準再生");
-		$formattedSerif = setText($formattedSerif , "音量=300.0");
-		$formattedSerif = $formattedSerif . "左右=0.0";
+		$formattedSerif = $this->setText($formattedSerif ,"[" . $serifNumber . "]");
+		$formattedSerif = $this->setText($formattedSerif , "start=" . $startPoint);
+		$formattedSerif = $this->setText($formattedSerif , "end=" . $endPoint);
+		$formattedSerif = $this->setText($formattedSerif , "layer=" . $layer);
+		$formattedSerif = $this->setText($formattedSerif , "overlay=1");
+		$formattedSerif = $this->setText($formattedSerif , "audio=1");
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".0]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=音声ファイル");
+		$formattedSerif = $this->setText($formattedSerif , "再生位置=0.00");
+		$formattedSerif = $this->setText($formattedSerif , "再生速度=100.0");
+		$formattedSerif = $this->setText($formattedSerif , "ループ再生=0");
+		$formattedSerif = $this->setText($formattedSerif , '動画ファイルと連携=0');
+		$formattedSerif = $this->setText($formattedSerif , "file=C:\movie\character voice\current\\" . $wavFileName);
+		$formattedSerif = $this->setText($formattedSerif , "[" . $serifNumber . ".1]");
+		$formattedSerif = $this->setText($formattedSerif , "_name=標準再生");
+		$formattedSerif = $this->setText($formattedSerif , "音量=300.0");
+		$formattedSerif = $this->setText($formattedSerif , "blend=0");
+		$formattedSerif = mb_convert_encoding($formattedSerif, 'SJIS-win', 'UTF-8');
 		fwrite($outputFile, $formattedSerif);
 	}
 
@@ -312,9 +317,11 @@ class CreateEXOController{
                     $rawheader = fread($fp, 4);
                     $data = unpack('Vdatasize',$rawheader);
                     $sec = $data["datasize"]/$header["bytespersec"];
-                    $minutes = intval(($sec / 60) % 60);
+					$minutes = intval(($sec / 60) % 60);
+					if (!isset($minites)) {
+						$minites = 0;
+					}
 					$seconds = intval($sec % 60);
-					error_log($file, 3, "tmp/error_log");			
                     fwrite($fpout, str_replace( ".wav", "", str_replace("/var/www/html/controller/tmp/" , "" , $file)) . " " . ($seconds + $minites * 60) * 30 . "\n");
                     fclose($fp);
                 }
@@ -322,11 +329,12 @@ class CreateEXOController{
         }
 	}
 	public function searchWavLength($lines, $fileName){
+		$fileName = str_replace(PHP_EOL, '', $fileName);
 		foreach($lines as $line){
 			$col = explode(" ", $line);
 			if( count($col) > 1 ){
 				if( $col[0] == $fileName ){
-					return intVal($col[1]) + self::VOICE_BUFFER;
+					return intval($col[1]) + self::VOICE_BUFFER;
 				}
 			}
 		}
@@ -353,11 +361,12 @@ class CreateEXOController{
 	{
 		$str = mb_convert_encoding($str, "UTF-16LE");
 		$str = bin2hex($str);
-		for($i = 0; $i<4096 - strlen($str); $i++)
+		$strlength = strlen($str);
+		for($i = 0; $i<(4096 - $strlength); $i++)
 		{
 			$str = $str . "0";
 		}
-		return $str;
+		return strtoupper($str);
 	}
 	public function generateConvertedSerifFile($sheet, $fp) {
 		$currentMode = "daily";
@@ -410,6 +419,9 @@ class CreateEXOController{
 
 		}
 	}
+	/**
+	 * 
+	 */
 	public function writeSerif($tmpFile,$outputFile,$wavtmpFile,$wavOutputFile, $charactorImageOutputFile)
 	{
 		$startPoint = 50;
@@ -420,19 +432,16 @@ class CreateEXOController{
 
 		$currentMode = "daily";
 		$wavContent = "";
-
 		while ($line = fgets($wavtmpFile)) {
-			$wavContent = $wavContent . "," . $lineStr;
+			$wavContent = $wavContent . "," . $line;
 		}
-
 		$wavLines = explode(",", $wavContent);
-
 		while ($lineStr = fgets($tmpFile)) {
 			if( $i % 4 == 3 ){
 				$charactor = str_replace(" ", "", $charactor);
 				if( $charactor == "0" ) {
-					$this->convertSerif($outputFile,$lineStr,$i/4,self::SAKURA_LAYER_NUMBER,$startPoint,$endPoint,self::SAKURA_SERIF_COLOR);
-					$this->convertWav($wavOutputFile, $wavFileName, $i/4, self::SAKURA_VOICE_LAYER_NUMBER,$startPoint, $endPoint);
+					$this->convertSerif($outputFile,$lineStr,($i - ($i % 4)) / 4,self::SAKURA_LAYER_NUMBER,$startPoint,$endPoint,self::SAKURA_SERIF_COLOR);
+					$this->convertWav($wavOutputFile, $wavFileName, ($i - ($i % 4)) / 4, self::SAKURA_VOICE_LAYER_NUMBER,$startPoint, $endPoint);
 					if( $currentMode == "lecture" ) {
 						$this->convertImageLecture($charactorImageOutputFile,$filePath,$j,self::SAKURA_ILLUST_LAYER_NUMBER,$startPoint,$endPoint,$posX,$posY);
 					} else {
@@ -440,8 +449,8 @@ class CreateEXOController{
 					}
 					$j = $j + 1;
 				} elseif( $charactor == "1" ) {
-					$this->convertSerif($outputFile,$lineStr,$i/4, self::HUUNA_LAYER_NUMBER, $startPoint, $endPoint, self::HUUNA_SERIF_COLOR);
-					$this->convertWav($wavOutputFile, $wavFileName, $i/4, self::HUUNA_VOICE_LAYER_NUMBER, $startPoint, $endPoint);
+					$this->convertSerif($outputFile,$lineStr,($i - ($i % 4)) / 4, self::HUUNA_LAYER_NUMBER, $startPoint, $endPoint, self::HUUNA_SERIF_COLOR);
+					$this->convertWav($wavOutputFile, $wavFileName, ($i - ($i % 4)) / 4, self::HUUNA_VOICE_LAYER_NUMBER, $startPoint, $endPoint);
 					if( $currentMode == "lecture" ) {
 						$this->convertImageLecture($charactorImageOutputFile, $filePath, $j, self::HUUNA_ILLUST_LAYER_NUMBER, $startPoint, $endPoint, $posX, $posY);
 					} else {
@@ -449,13 +458,14 @@ class CreateEXOController{
 					}
 					$j = $j + 1;                
 				} else {
-					$this->convertSerif($outputFile,$lineStr,$i/4, self::DEFAULT_LAYER_NUMBER, $startPoint, $endPoint, self::DEFAULT_SERIF_COLOR);
-					$this->convertWav($wavOutputFile,$wavFileName,$i/4, self::DEFAULT_LAYER_NUMBER, $startPoint, $endPoint);
+					$this->convertSerif($outputFile,$lineStr,($i - ($i % 4)) / 4, self::DEFAULT_LAYER_NUMBER, $startPoint, $endPoint, self::DEFAULT_SERIF_COLOR);
+					$this->convertWav($wavOutputFile,$wavFileName,($i - ($i % 4)) / 4, self::DEFAULT_LAYER_NUMBER, $startPoint, $endPoint);
 				}
 			} elseif( $i % 4 == 1 ) {
 				$lineStr = str_replace(" ", "", $lineStr);
 				$startPoint = $endPoint + 1;
 				$endPoint = $startPoint + $this->searchWavLength($wavLines, $lineStr);
+				$lineStr = str_replace(PHP_EOL, '', $lineStr);
 				$wavFileName = $lineStr . ".wav";
 				$currentPoint = $lineStr;
 				if( $currentPoint == self::LECTURE_START ){
@@ -471,6 +481,7 @@ class CreateEXOController{
 				$posY = $col[2];
 			} else {
 				$charactor = $lineStr;
+				$charactor = str_replace(PHP_EOL, '', $charactor);
 			}
 			$i = $i + 1;
 		}
