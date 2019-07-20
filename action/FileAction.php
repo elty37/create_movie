@@ -57,7 +57,11 @@ class FileAction {
                 fclose($tmpwavlengthfile);
 				$wavTmpFile = fopen($c . "/tmp/wavlength.tmp", "r+");
 				$controller->fileInit($outputFile);
-    			$controller->writeSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
+				$controller->writeSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
+				
+				$lineOutputFile = fopen($c . "/tmp/out4.exo" ,"w+");
+				$lineArray = $controller->readXlsxCustom($readFile, 1, "B2:D200");
+				$controller->writeLine($lineOutputFile, $lineArray);
 				return array();
 			
 /*			}catch(Exception $e){

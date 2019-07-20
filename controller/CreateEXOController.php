@@ -1,5 +1,7 @@
 <?php
 require_once "/var/www/html/vendor/autoload.php";
+require_once "/var/www/html/entity/TextNotes.php";
+require_once "/var/www/html/entity/ImageNotes.php";
 
 class CreateEXOController{
 
@@ -340,7 +342,9 @@ class CreateEXOController{
 		}
 		return 0;
 	}
-
+	/**
+	 * エクセル読み込み
+	 */
 	public function readXlsx($readFile)
 	{
 		$reader = new PhpOffice\PhpSpreadsheet\Reader\Xlsx();
@@ -348,6 +352,19 @@ class CreateEXOController{
 		$sheet = $spreadsheet->getSheet(0);
 		//B2のセルの値
 		$data = $sheet->rangeToArray("C3:H175");
+		return $data;
+
+	}
+
+	/**
+	 * エクセル読み込み(範囲指定Ver)
+	 */
+	public function readXlsxCustom($readFile, $sheetNumber, $position)
+	{
+		$reader = new PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+		$spreadsheet = $reader->load("/var/www/html/" . $readFile);
+		$sheet = $spreadsheet->getSheet($sheetNumber);
+		$data = $sheet->rangeToArray($position);
 		return $data;
 
 	}
@@ -368,7 +385,8 @@ class CreateEXOController{
 		}
 		return strtoupper($str);
 	}
-	public function generateConvertedSerifFile($sheet, $fp) {
+	public function generateConvertedSerifFile($sheet, $fp)
+	{
 		$currentMode = "daily";
 		$i = 0;
 		While ($i < count($sheet)){
@@ -487,4 +505,35 @@ class CreateEXOController{
 		}
 	}
 
+	/**
+	 * 解説モードのライン風画面EXOを生成
+	 */
+	public function writeLine($lineOutputFile, $lineArray) {
+		$length=40;
+		$res = "";
+
+		for ($i=0; $i<count($lineArray); $i++) {
+			if (is_null($lineArray[$i][0]) || strlen($lineArray[$i][0]) === 0 )
+			{
+				continue;
+			}
+
+			$huunaTextNote = new TextNotes();
+			$huunaTextNote->start = $length * $i + 1;
+			$huunaTextNote->end = $length * ($i + 1);
+			$huunaTextNote->layer = 5;
+			$huunaTextNote->notesNumber = $i;
+			$huunaTextNote->xStart = "154.0";
+			$huunaTextNote->yStart = "40.0";
+			$huunaTextNote->xEnd = null;
+			$huunaTextNote->yEnd = null;
+			$huunaTextNote->text = $lineArray[$i][2];
+			$huunaTextNote->moveType = $huunaTextNote::MOVE_HIGH_LOW;
+			$res = $res . $huunaTextNote->printDefaultNotes();
+			$res = $res . $huunaTextNote->printImageTextNotes(0);
+			$res = $res . $huunaTextNote->printDefaultPrintNotes(1);	
+		}
+		$res =  mb_convert_encoding($res, 'SJIS-win', 'UTF-8');
+		fwrite($lineOutputFile, $res);
+	}
 }
