@@ -6,7 +6,7 @@ $actionId = isset($_POST["actionId"]) ? $_POST["actionId"] : false;
 
 if($actionId === false)
 {
-	header('Location: http://49.212.209.129/movie_create/view/error.html');	
+	header('Location:http://localhost:8080/view/error.php');	
 }
 
 switch($actionId) {
@@ -15,7 +15,7 @@ switch($actionId) {
 		$response = $action->execute();	
 		break;
 	default:
-		header('Location: http://49.212.209.129/movie_create/view/error.html');	
+		header('Location: http://localhost:8080/view/error.php');	
 	
 }
 
@@ -24,7 +24,7 @@ if(count($responce) > 0){
 		error_log("[". date('Y-m-d H:i:s') . "]". $msg, 3, "/var/www/logs/error.log");
 	}
 }else{
-	header('Location: http://49.212.209.129/movie_create/view/index.html');	
+	header('Location: http://localhost:8080/view/index.html');	
 }
-header('Location: http://49.212.209.129/movie_create/view/error.html');	
+header('Location: http://localhost:8080/view/error.php');	
 

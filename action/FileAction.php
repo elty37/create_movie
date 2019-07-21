@@ -37,6 +37,7 @@ class FileAction {
 		$error = [];
 		if($this->validate($fileInputInfo, $error)) {
 //			try{
+				session_start();
 				$readFile = "test3.xlsx";
 				$controller = new CreateEXOController();
 			//	$controller->readXlsx($readFile)
