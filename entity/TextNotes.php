@@ -102,4 +102,29 @@ class TextNotes extends Notes {
 		$this->encodedText = $str;
 		return $str;
 	}
+	/**
+	 * 移動させる幅を返す
+	 * @return int 移動幅(px)
+	 */
+	public function getMovePx() {
+		$width = mb_strwidth($this->text);
+		$rowNum = $width / self::RETURN_WIDTH;
+		switch($rowNum) {
+			case 1:
+				$res = self::MOVE_ROW_1;
+				break;
+			case 2:
+				$res = self::MOVE_ROW_2;
+				break;
+			case 3:
+				$res = self::MOVE_ROW_3;
+				break;
+			case 4:
+				$res = self::MOVE_ROW_4;
+				break;
+			default:
+				$res = self::MOVE_ROW_4;
+		}
+		return $res;
+	}
 }

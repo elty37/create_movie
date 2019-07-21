@@ -60,8 +60,9 @@ class FileAction {
 				$controller->writeSerif($tmpFile, $outputFile, $wavTmpFile, $wavOutputFile, $charactorImageOutputFile);
 				
 				$lineOutputFile = fopen($c . "/tmp/out4.exo" ,"w+");
-				$lineArray = $controller->readXlsxCustom($readFile, 1, "B2:D200");
-				$controller->writeLine($lineOutputFile, $lineArray);
+				$lineArray = $controller->readXlsxCustom($readFile, 1, "B3:D200");
+				$lineConfigArray = $controller->readXlsxCustom($readFile, 1, "F3:G7");
+				$controller->writeLine($lineOutputFile, $lineArray, $lineConfigArray);
 				return array();
 			
 /*			}catch(Exception $e){

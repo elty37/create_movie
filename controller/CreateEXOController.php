@@ -22,8 +22,14 @@ class CreateEXOController{
 	const SAKURA_ILLUST_LAYER_NUMBER = 1;
 	const HUUNA_ILLUST_LAYER_NUMBER = 2;
 	const DEFAULT_ILLUST_LAYER_NUMBER = 3;
-
-
+	const LINE_BASE_Y_POSITION = "40.0";
+	const LINE_TEXT_X_POSITION_RIGHT = "154.0";
+	const LINE_TEXT_X_POSITION_LEFT = "202.0";
+	const LINE_ICON_X_POSITION_RIGHT = "297.0";
+	const LINE_ICON_X_POSITION_LEFT = "162.0";
+	const LINE_BALLOON_X_POSITION_RIGHT = "202.0";
+	const LINE_BALLOON_X_POSITION_LEFT = "252.0";
+	const LINE_LIMIT_HEIGHT = -231;
 	public function saveFile($fileInputInfo){
 		if (!move_uploaded_file($file_tmp_name, "../../data/uploaded/" . $file_name)) {
 			return false;
@@ -508,32 +514,172 @@ class CreateEXOController{
 	/**
 	 * 解説モードのライン風画面EXOを生成
 	 */
-	public function writeLine($lineOutputFile, $lineArray) {
-		$length=40;
-		$res = "";
-
-		for ($i=0; $i<count($lineArray); $i++) {
+	public function writeLine($lineOutputFile, $lineArray, $lineConfigArray) {
+		$res = TextNotes::printInitialLineBase();
+		$notesArray =array();
+		$currentLayer = 2;
+		$nextCurrentLayer = -1;
+		$start = 1;
+		$movedTmpNotes = null;
+		$tmpNotesForMoveInLoop = null;
+		$this->debugValue("start", true);
+		$j=1;
+		for ($i=1; $i<count($lineArray); $i++) {
 			if (is_null($lineArray[$i][0]) || strlen($lineArray[$i][0]) === 0 )
 			{
 				continue;
 			}
+			$lineTextXposition = $this->getLineXposition($lineArray[$i][1], $lineConfigArray, 0);
+			$tmpNotes = $this->createLineTextNotes($j * 2 - 1, $start, $lineArray[$i][2], $currentLayer, $lineTextXposition, self::LINE_BASE_Y_POSITION);
+			$tmpNotesForMove  = clone $tmpNotes;
+			$tmpNotesForMove->notesNumber = $j * 2;
+			$tmpNotesForMove->isMove = true;
+			$tmpNotesForMove->start = $tmpNotes->end + 1;
+			$tmpNotesForMove->end = $tmpNotesForMove->start + 5;
+			$length = $tmpNotes->getMovePx();
+			$tmpNotesForMove->yEnd = $tmpNotesForMove->yStart - $length;
+			$tmpNotesForMove->yEnd = $tmpNotesForMove->yEnd . ".0";
+			if (!isset($notesArray[$currentLayer])) 
+			{
+				$notesArray[$currentLayer] = array();
+			}
+			$tmpNotes->isCurrentNotes = true;
+			$tmpNotesForMove->isCurrentNotes = true;
+			array_push($notesArray[$currentLayer], $tmpNotes, $tmpNotesForMove);
 
-			$huunaTextNote = new TextNotes();
-			$huunaTextNote->start = $length * $i + 1;
-			$huunaTextNote->end = $length * ($i + 1);
-			$huunaTextNote->layer = 5;
-			$huunaTextNote->notesNumber = $i;
-			$huunaTextNote->xStart = "154.0";
-			$huunaTextNote->yStart = "40.0";
-			$huunaTextNote->xEnd = null;
-			$huunaTextNote->yEnd = null;
-			$huunaTextNote->text = $lineArray[$i][2];
-			$huunaTextNote->moveType = $huunaTextNote::MOVE_HIGH_LOW;
-			$res = $res . $huunaTextNote->printDefaultNotes();
-			$res = $res . $huunaTextNote->printImageTextNotes(0);
-			$res = $res . $huunaTextNote->printDefaultPrintNotes(1);	
+			//生成済みノーツの移動
+			foreach($notesArray as $notesList)
+			{
+				foreach($notesList as $notes)
+				{
+					$tmpNotesForMoveInLoop = null;
+					if($notes->isCurrentNotes) {
+						$notes->isCurrentNotes = false;
+						continue;
+					}
+					if (!$notes->isMove && $notes->hasMove) {
+						continue;
+					}
+					if (!$notes->isMove && !$notes->hasMove) {
+						if (intval($notes->yStart) - $length < self::LINE_LIMIT_HEIGHT ) {
+							continue;
+						}
+						$tmpNotesForMoveInLoop = clone $notes;
+						//notesNumberは降りなおすのでなんでもいい
+						$tmpNotesForMoveInLoop->notesNumber = $j * 2;
+						$tmpNotesForMoveInLoop->isMove = true;
+						$tmpNotesForMoveInLoop->start = $notes->end + 1;
+						$tmpNotesForMoveInLoop->end = $tmpNotesForMoveInLoop->start + 5;
+						$tmpNotesForMoveInLoop->xEnd = $tmpNotesForMoveInLoop->xStart;
+						$tmpNotesForMoveInLoop->yEnd = $tmpNotesForMoveInLoop->yStart - $length;
+						$tmpNotesForMoveInLoop->yEnd = $tmpNotesForMoveInLoop->yEnd . ".0";
+						array_push($notesArray[$tmpNotesForMoveInLoop->layer], $tmpNotesForMoveInLoop);
+						$notes->hasMove = true;
+						continue;
+					}
+					
+					$notes->xEnd = $notes->xStart;
+					$notes->yEnd = $notes->yStart - $length;
+					$notes->yEnd = $notes->yEnd . ".0";
+					if (intval($notes->yEnd) >= self::LINE_LIMIT_HEIGHT && !$notes->hasFix) {
+						//移動後のノーツ
+						$movedTmpNotes = $this->createLineTextNotes($j * 2 - 1, $notes->end + 1, $notes->text, $notes->layer, $notes->xStart, $notes->yEnd);
+						$notes->hasFix = true;
+						array_push($notesArray[$movedTmpNotes->layer], $movedTmpNotes);
+						$nextCurrentLayer = -1;
+					} else {
+						$nextCurrentLayer = $notes->layer;
+					}
+				}
+			}
+			
+			$movedTmpNotes = null;
+			$tmpNotesForMoveInLoop = null;
+			$start = $tmpNotesForMove->end + 1;
+			if ($nextCurrentLayer != -1) {
+				$currentLayer = $nextCurrentLayer;
+				$nextCurrentLayer = -1;
+			} else {
+				$currentLayer = intval($currentLayer) + 1;
+			}
+			$j++;
 		}
-		$res =  mb_convert_encoding($res, 'SJIS-win', 'UTF-8');
+		$notesNumber = 1;
+		foreach ($notesArray as $layer => $textNotesList) {
+			foreach ($textNotesList as $textNote) {
+				$this->debugValue(count($textNotesList));
+				$textNote->notesNumber = $notesNumber;
+				$res = $res . $textNote->printDefaultNotes();
+				$res = $res . $textNote->printImageTextNotes(0);
+				$res = $res . $textNote->printDefaultPrintNotes(1);
+				$notesNumber++;	
+			}
+		}
+		$res = mb_convert_encoding($res, 'SJIS-win', 'UTF-8');
 		fwrite($lineOutputFile, $res);
+	}
+
+	/**
+	 * ラインノーツを表示
+     * @param int $notesNumber ノーツ番号
+	 * @param string $start 開始フレーム
+	 * @param string $text テキスト
+	 * @param string $layer レイヤ
+	 * @param string $xStart 初期値x座標
+	 * @param string $yStart 初期値y座標
+	 * @return Notes ノーツ
+	 */
+	private function createLineTextNotes($notesNumber, $start, $text, $layer, $xStart, $yStart, $xEnd = null, $yEnd = null)
+	{
+		$length = 200;
+		$textNote = new TextNotes();
+		$textNote->start = $start;
+		$textNote->end = $length + $start;
+		$textNote->layer = $layer;
+		$textNote->notesNumber = $notesNumber;
+		$textNote->xStart = $xStart;
+		$textNote->yStart = $yStart;
+		$textNote->xEnd = $xEnd;
+		$textNote->yEnd = $yEnd;
+		$textNote->text = $text;
+		$textNote->moveType = $textNote::MOVE_HIGH_LOW;
+		return $textNote;
+	}
+
+	/**
+	 * ラインの左右位置を設定
+	 * @param string $charactor キャラ名
+	 * @param string $lineConfigArray 設定欄配列
+	 * @param int $division ノーツ区分(0:文章, 1:アイコン, 2:吹き出し)
+	 * @return string 位置
+	 */
+	private function getLineXposition($charactor, $lineConfigArray, $division)
+	{
+		foreach($lineConfigArray as $key => $value)
+		{
+			if($value[0] == $charactor)
+			{
+				switch($division){
+					case 0:
+						return $value[1] == "右" ? self::LINE_TEXT_X_POSITION_RIGHT : self::LINE_TEXT_X_POSITION_LEFT;
+						break;
+					case 1:
+						return $value[1] == "右" ? self::LINE_ICON_X_POSITION_RIGHT : self::LINE_ICON_X_POSITION_LEFT;
+						break;
+					case 2:
+						return $value[1] == "右" ? self::LINE_BALLOON_X_POSITION_RIGHT : self::LINE_BALLOON_X_POSITION_LEFT;
+						break;
+					default;
+				}
+			}
+		}
+		return self::LINE_TEXT_X_POSITION_LEFT;
+	}
+
+	private function debugValue($val, $first) {
+		if ($first) {
+			$_SESSION["debugInfo"] = array();
+		}
+		$_SESSION["debugInfo"][] = $val;
 	}
 }
