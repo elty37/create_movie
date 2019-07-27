@@ -108,8 +108,11 @@ class TextNotes extends Notes {
 	 */
 	public function getMovePx() {
 		$width = mb_strwidth($this->text);
-		$rowNum = $width / self::RETURN_WIDTH;
+		$rowNum = floor($width / self::RETURN_WIDTH);
 		switch($rowNum) {
+			case 0:
+				$res = self::MOVE_ROW_1;
+				break;
 			case 1:
 				$res = self::MOVE_ROW_1;
 				break;

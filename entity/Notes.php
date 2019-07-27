@@ -107,7 +107,10 @@ class Notes {
 		return $res;
 	}
 
-
+	public function setMoveHeight($height) {
+		$this->xEnd = $this->xStart;
+		$this->yEnd = $this->yStart + $height;
+	}
 
 	public static function printInitialLineBase() 
 	{

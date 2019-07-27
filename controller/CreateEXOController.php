@@ -2,6 +2,8 @@
 require_once "/var/www/html/vendor/autoload.php";
 require_once "/var/www/html/entity/TextNotes.php";
 require_once "/var/www/html/entity/ImageNotes.php";
+require_once "/var/www/html/entity/ChatBalloon.php";
+require_once "/var/www/html/entity/ChatBalloonSet.php";
 
 class CreateEXOController{
 
@@ -22,7 +24,7 @@ class CreateEXOController{
 	const SAKURA_ILLUST_LAYER_NUMBER = 1;
 	const HUUNA_ILLUST_LAYER_NUMBER = 2;
 	const DEFAULT_ILLUST_LAYER_NUMBER = 3;
-	const LINE_BASE_Y_POSITION = "40.0";
+	const LINE_BASE_Y_POSITION = "80.0";
 	const LINE_TEXT_X_POSITION_RIGHT = "154.0";
 	const LINE_TEXT_X_POSITION_LEFT = "202.0";
 	const LINE_ICON_X_POSITION_RIGHT = "297.0";
@@ -516,104 +518,47 @@ class CreateEXOController{
 	 */
 	public function writeLine($lineOutputFile, $lineArray, $lineConfigArray) {
 		$res = TextNotes::printInitialLineBase();
-		$notesArray =array();
+		$balloonArray =array();
 		$currentLayer = 2;
 		$nextCurrentLayer = -1;
 		$start = 1;
 		$movedTmpNotes = null;
 		$tmpNotesForMoveInLoop = null;
 		$this->debugValue("start", true);
+
 		$j=1;
 		for ($i=1; $i<count($lineArray); $i++) {
-			if (is_null($lineArray[$i][0]) || strlen($lineArray[$i][0]) === 0 )
+			if (is_null($lineArray[$i-1][0]) || strlen($lineArray[$i-1][0]) === 0 )
 			{
 				continue;
 			}
-			$lineTextXposition = $this->getLineXposition($lineArray[$i][1], $lineConfigArray, 0);
-			$tmpNotes = $this->createLineTextNotes($j * 2 - 1, $start, $lineArray[$i][2], $currentLayer, $lineTextXposition, self::LINE_BASE_Y_POSITION);
-			$tmpNotesForMove  = clone $tmpNotes;
-			$tmpNotesForMove->notesNumber = $j * 2;
-			$tmpNotesForMove->isMove = true;
-			$tmpNotesForMove->start = $tmpNotes->end + 1;
-			$tmpNotesForMove->end = $tmpNotesForMove->start + 5;
-			$length = $tmpNotes->getMovePx();
-			$tmpNotesForMove->yEnd = $tmpNotesForMove->yStart - $length;
-			$tmpNotesForMove->yEnd = $tmpNotesForMove->yEnd . ".0";
-			if (!isset($notesArray[$currentLayer])) 
-			{
-				$notesArray[$currentLayer] = array();
-			}
-			$tmpNotes->isCurrentNotes = true;
-			$tmpNotesForMove->isCurrentNotes = true;
-			array_push($notesArray[$currentLayer], $tmpNotes, $tmpNotesForMove);
-
-			//生成済みノーツの移動
-			foreach($notesArray as $notesList)
-			{
-				foreach($notesList as $notes)
-				{
-					$tmpNotesForMoveInLoop = null;
-					if($notes->isCurrentNotes) {
-						$notes->isCurrentNotes = false;
-						continue;
-					}
-					if (!$notes->isMove && $notes->hasMove) {
-						continue;
-					}
-					if (!$notes->isMove && !$notes->hasMove) {
-						if (intval($notes->yStart) - $length < self::LINE_LIMIT_HEIGHT ) {
-							continue;
-						}
-						$tmpNotesForMoveInLoop = clone $notes;
-						//notesNumberは降りなおすのでなんでもいい
-						$tmpNotesForMoveInLoop->notesNumber = $j * 2;
-						$tmpNotesForMoveInLoop->isMove = true;
-						$tmpNotesForMoveInLoop->start = $notes->end + 1;
-						$tmpNotesForMoveInLoop->end = $tmpNotesForMoveInLoop->start + 5;
-						$tmpNotesForMoveInLoop->xEnd = $tmpNotesForMoveInLoop->xStart;
-						$tmpNotesForMoveInLoop->yEnd = $tmpNotesForMoveInLoop->yStart - $length;
-						$tmpNotesForMoveInLoop->yEnd = $tmpNotesForMoveInLoop->yEnd . ".0";
-						array_push($notesArray[$tmpNotesForMoveInLoop->layer], $tmpNotesForMoveInLoop);
-						$notes->hasMove = true;
-						continue;
-					}
-					
-					$notes->xEnd = $notes->xStart;
-					$notes->yEnd = $notes->yStart - $length;
-					$notes->yEnd = $notes->yEnd . ".0";
-					if (intval($notes->yEnd) >= self::LINE_LIMIT_HEIGHT && !$notes->hasFix) {
-						//移動後のノーツ
-						$movedTmpNotes = $this->createLineTextNotes($j * 2 - 1, $notes->end + 1, $notes->text, $notes->layer, $notes->xStart, $notes->yEnd);
-						$notes->hasFix = true;
-						array_push($notesArray[$movedTmpNotes->layer], $movedTmpNotes);
-						$nextCurrentLayer = -1;
-					} else {
-						$nextCurrentLayer = $notes->layer;
-					}
-				}
-			}
-			
-			$movedTmpNotes = null;
-			$tmpNotesForMoveInLoop = null;
-			$start = $tmpNotesForMove->end + 1;
-			if ($nextCurrentLayer != -1) {
-				$currentLayer = $nextCurrentLayer;
-				$nextCurrentLayer = -1;
-			} else {
-				$currentLayer = intval($currentLayer) + 1;
-			}
-			$j++;
+			$lineTextXposition = $this->getLineXposition($lineArray[$i-1][1], $lineConfigArray, 0);
+			$balloonSet = new ChatBalloonSet();
+			$balloon = new ChatBalloon();
+			$currentTextNotes = $this->createLineTextNotes($j * 2 - 1, $start, $lineArray[$i-1][2], $currentLayer + 2, $lineTextXposition, self::LINE_BASE_Y_POSITION);
+			$currentBalloonNotes = $this->createLineBalloonNotes($j * 2 - 1, $start, $lineArray[$i-1][2], $currentLayer, $lineTextXposition, self::LINE_BASE_Y_POSITION);
+			$currentCharactorIconNotes = $this->createLineCharactorIconNotes($j * 2 - 1, $start, $lineArray[$i-1][2], $currentLayer + 1, $lineTextXposition, self::LINE_BASE_Y_POSITION);
+			$balloon->chatImageNotes = $currentBalloonNotes;
+			$balloon->chatCharactorIconNotes = $currentCharactorIconNotes;
+			$balloon->chatTextNotes = $currentTextNotes;
+			$balloonSet->fixedChatBalloon = $balloon;
+			$length = $currentTextNotes->getMovePx();
+			$balloonSet->setMoveHeight($length, true);
+			$balloonArray = $this->moveExistsBalloon($balloonArray, $length);
+			$balloonArray[] = $balloonSet;
+			$currentLayer = $currentLayer + 3;
 		}
 		$notesNumber = 1;
-		foreach ($notesArray as $layer => $textNotesList) {
-			foreach ($textNotesList as $textNote) {
-				$this->debugValue(count($textNotesList));
-				$textNote->notesNumber = $notesNumber;
-				$res = $res . $textNote->printDefaultNotes();
-				$res = $res . $textNote->printImageTextNotes(0);
-				$res = $res . $textNote->printDefaultPrintNotes(1);
-				$notesNumber++;	
-			}
+		$layer = 2;
+		foreach ($balloonArray as $balloonSet) {
+			$balloon = $balloonSet->fixedChatBalloon;
+			$balloon->chatImageNotes->layer = $balloon->chatTextNotes->notesNumber;
+			$balloon->chatCharactorIconNotes->layer = $balloon->chatTextNotes->notesNumber + 1;
+			$balloon->chatTextNotes->layer = $balloon->chatTextNotes->notesNumber + 2;
+			$res = $res . $balloon->chatTextNotes->printDefaultNotes();
+			$res = $res . $balloon->chatTextNotes->printImageTextNotes(0);
+			$res = $res . $balloon->chatTextNotes->printDefaultPrintNotes(1);
+			$notesNumber++;	
 		}
 		$res = mb_convert_encoding($res, 'SJIS-win', 'UTF-8');
 		fwrite($lineOutputFile, $res);
@@ -647,6 +592,59 @@ class CreateEXOController{
 	}
 
 	/**
+	 * ライン吹き出しノーツを生成
+     * @param int $notesNumber ノーツ番号
+	 * @param string $start 開始フレーム
+	 * @param string $text テキスト
+	 * @param string $layer レイヤ
+	 * @param string $xStart 初期値x座標
+	 * @param string $yStart 初期値y座標
+	 * @return Notes ノーツ
+	 */
+	private function createLineBalloonNotes($notesNumber, $start, $balloonPath, $layer, $xStart, $yStart, $xEnd = null, $yEnd = null)
+	{
+		$length = 200;
+		$imageNotes = new ImageNotes();
+		$imageNotes->start = $start;
+		$imageNotes->end = $length + $start;
+		$imageNotes->layer = $layer;
+		$imageNotes->notesNumber = $notesNumber;
+		$imageNotes->xStart = $xStart;
+		$imageNotes->yStart = $yStart;
+		$imageNotes->xEnd = $xEnd;
+		$imageNotes->yEnd = $yEnd;
+		$imageNotes->file = $balloonPath;
+		$imageNotes->moveType = $imageNotes::MOVE_HIGH_LOW;
+		return $imageNotes;
+	}
+
+	/**
+	 * ラインアイコンノーツを生成
+     * @param int $notesNumber ノーツ番号
+	 * @param string $start 開始フレーム
+	 * @param string $text テキスト
+	 * @param string $layer レイヤ
+	 * @param string $xStart 初期値x座標
+	 * @param string $yStart 初期値y座標
+	 * @return Notes ノーツ
+	 */
+	private function createLineCharactorIconNotes($notesNumber, $start, $iconPath, $layer, $xStart, $yStart, $xEnd = null, $yEnd = null)
+	{
+		$length = 200;
+		$imageNotes = new ImageNotes();
+		$imageNotes->start = $start;
+		$imageNotes->end = $length + $start;
+		$imageNotes->layer = $layer;
+		$imageNotes->notesNumber = $notesNumber;
+		$imageNotes->xStart = $xStart;
+		$imageNotes->yStart = $yStart;
+		$imageNotes->xEnd = $xEnd;
+		$imageNotes->yEnd = $yEnd;
+		$imageNotes->file = $iconPath;
+		$imageNotes->moveType = $imageNotes::MOVE_HIGH_LOW;
+		return $imageNotes;
+	}
+	/**
 	 * ラインの左右位置を設定
 	 * @param string $charactor キャラ名
 	 * @param string $lineConfigArray 設定欄配列
@@ -675,6 +673,19 @@ class CreateEXOController{
 		}
 		return self::LINE_TEXT_X_POSITION_LEFT;
 	}
+
+	private function moveExistsBalloon($balloonArray, $height) {
+		$newBalloonArray = array();
+		foreach ($balloonArray as $balloonSet) {
+			$newBalloonSet = new ChatBalloonSet();
+			$newBalloonSet->setFixedBalloonByBeforeMoveBalloon($balloonSet->moveChatBalloon);
+			if ($newBalloonSet->setMoveHeight($height)) {
+				$newBalloonArray[] = $newBalloonSet;
+			}
+		}
+		return array_merge($balloonArray, $newBalloonArray);
+	}
+
 
 	private function debugValue($val, $first) {
 		if ($first) {
