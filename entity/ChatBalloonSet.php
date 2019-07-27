@@ -33,9 +33,9 @@ class ChatBalloonSet {
 	}
 
 	public function setFixedBalloonByBeforeMoveBalloon($moveBalloon) {
-		$newBalloonSet->fixedChatBalloon = clone $moveBalloon;
-		$newBalloonSet->fixedChatBalloon->setYStartFromYEnd();
-		$newBalloonSet->fixedChatBalloon->setStart($newBalloonSet->fixedChatBalloon->chatTextNotes->start);
+		$this->fixedChatBalloon = clone $moveBalloon;
+		$this->fixedChatBalloon->setYStartFromYEnd();
+		$this->fixedChatBalloon->setStart($this->fixedChatBalloon->chatTextNotes->start);
 		
 	}
 }
