@@ -109,7 +109,7 @@ class Notes {
 
 	public function setMoveHeight($height) {
 		$this->xEnd = $this->xStart;
-		$this->yEnd = intval($this->yStart) + $height;
+		$this->yEnd = intval($this->yStart) - $height;
         $this->yEnd = $this->yEnd . ".0";
 	}
 

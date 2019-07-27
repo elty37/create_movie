@@ -1,5 +1,6 @@
 <?php
 require_once "/var/www/html/vendor/autoload.php";
+require_once "/var/www/html/entity/Notes.php";
 require_once "/var/www/html/entity/TextNotes.php";
 require_once "/var/www/html/entity/ImageNotes.php";
 require_once "/var/www/html/entity/ChatBalloon.php";
@@ -26,12 +27,27 @@ class CreateEXOController{
 	const DEFAULT_ILLUST_LAYER_NUMBER = 3;
 	const LINE_BASE_Y_POSITION = "80.0";
 	const LINE_TEXT_X_POSITION_RIGHT = "154.0";
-	const LINE_TEXT_X_POSITION_LEFT = "202.0";
-	const LINE_ICON_X_POSITION_RIGHT = "297.0";
+	const LINE_TEXT_X_POSITION_LEFT = "198.0";
+	const LINE_ICON_X_POSITION_RIGHT = "293.0";
 	const LINE_ICON_X_POSITION_LEFT = "162.0";
-	const LINE_BALLOON_X_POSITION_RIGHT = "202.0";
-	const LINE_BALLOON_X_POSITION_LEFT = "252.0";
+	const LINE_BALLOON_X_POSITION_RIGHT = "212.0";
+	const LINE_BALLOON_X_POSITION_LEFT = "248.0";
 	const LINE_LIMIT_HEIGHT = -231;
+
+	/** @ver array $iconPathArray ラインアイコン情報 */
+	public $iconPathArray = array();
+	/** @ver array $balloonPathArray ライン吹き出し情報 */
+	public $balloonPathArray = array();
+
+	public function setIconPath($readFile, $sheetNumber, $position) {
+		$ary = $this->readXlsxCustom($readFile, $sheetNumber, $position);
+		$this->iconPathArray = $ary;
+	}
+	public function setBalloonPath($readFile, $sheetNumber, $position) {
+		$ary = $this->readXlsxCustom($readFile, $sheetNumber, $position);
+		$this->balloonPathArray = $ary;
+	}
+
 	public function saveFile($fileInputInfo){
 		if (!move_uploaded_file($file_tmp_name, "../../data/uploaded/" . $file_name)) {
 			return false;
@@ -533,32 +549,71 @@ class CreateEXOController{
 				continue;
 			}
 			$lineTextXposition = $this->getLineXposition($lineArray[$i-1][1], $lineConfigArray, 0);
+			$lineBalloonXposition = $this->getLineXposition($lineArray[$i-1][1], $lineConfigArray, 2);
+			$lineCharactorIconXposition = $this->getLineXposition($lineArray[$i-1][1], $lineConfigArray, 1);
 			$balloonSet = new ChatBalloonSet();
 			$balloon = new ChatBalloon();
-			$currentTextNotes = $this->createLineTextNotes($j * 2 - 1, $start, $lineArray[$i-1][2], $currentLayer + 2, $lineTextXposition, self::LINE_BASE_Y_POSITION);
-			$currentBalloonNotes = $this->createLineBalloonNotes($j * 2 - 1, $start, $lineArray[$i-1][2], $currentLayer, $lineTextXposition, self::LINE_BASE_Y_POSITION);
-			$currentCharactorIconNotes = $this->createLineCharactorIconNotes($j * 2 - 1, $start, $lineArray[$i-1][2], $currentLayer + 1, $lineTextXposition, self::LINE_BASE_Y_POSITION);
-			$balloon->chatImageNotes = $currentBalloonNotes;
-			$balloon->chatCharactorIconNotes = $currentCharactorIconNotes;
-			$balloon->chatTextNotes = $currentTextNotes;
-			$balloonSet->fixedChatBalloon = $balloon;
-			$length = $currentTextNotes->getMovePx();
-			$balloonSet->setMoveHeight($length, true);
-			$balloonArray = $this->moveExistsBalloon($balloonArray, $length);
-			$balloonArray[] = $balloonSet;
+			$balloonMove = new ChatBalloon();
+			$currentTextNotes = $this->createLineTextNotes($j * 2 - 1, $start, $lineArray[$i-1][2] . $i, $currentLayer + 2, $lineTextXposition, self::LINE_BASE_Y_POSITION);
+			$balloonImagePath = $this->getBalloonImagePath($currentTextNotes->getMovePx());
+			$charactorIcon = $this->getIconImagePath($lineArray[$i-1][1]);
+			$currentBalloonNotes = $this->createLineBalloonNotes($j * 2 - 1, $start, $balloonImagePath, $currentLayer, $lineBalloonXposition, self::LINE_BASE_Y_POSITION);
+			$currentCharactorIconNotes = $this->createLineCharactorIconNotes($j * 2 - 1, $start, $charactorIcon, $currentLayer + 1, $lineCharactorIconXposition, self::LINE_BASE_Y_POSITION);
 			$currentLayer = $currentLayer + 3;
+			$start = $currentTextNotes->end + 6;
+			$balloon->chatImageNotes = clone $currentBalloonNotes;
+			$balloon->chatCharactorIconNotes = clone $currentCharactorIconNotes;
+			$balloon->chatTextNotes = clone $currentTextNotes;
+			$balloonMove->chatImageNotes = clone $currentBalloonNotes;
+			$balloonMove->chatCharactorIconNotes = clone $currentCharactorIconNotes;
+			$balloonMove->chatTextNotes = clone $currentTextNotes;
+			$balloonSet->fixedChatBalloon = clone $balloon;
+			$balloonSet->moveChatBalloon = clone $balloonMove;
+			if ($i != 1) {
+				$balloonSet->setMoveHeight($length, true);
+				$newBalloonArray = $this->moveExistsBalloon($balloonArray, $length, $balloonSet);
+				$balloonArray = array_merge($balloonArray,$newBalloonArray);
+			}
+			$balloonArray[] = $balloonSet;
+			$length = $currentTextNotes->getMovePx();
 		}
 		$notesNumber = 1;
 		$layer = 2;
 		foreach ($balloonArray as $balloonSet) {
 			$balloon = $balloonSet->fixedChatBalloon;
-			$balloon->chatImageNotes->layer = $balloon->chatTextNotes->notesNumber;
-			$balloon->chatCharactorIconNotes->layer = $balloon->chatTextNotes->notesNumber + 1;
-			$balloon->chatTextNotes->layer = $balloon->chatTextNotes->notesNumber + 2;
+			$balloon->chatImageNotes->layer = $layer;
+			$balloon->chatImageNotes->notesNumber = $notesNumber;
+			$balloon->chatCharactorIconNotes->layer = $layer + 1;
+			$balloon->chatCharactorIconNotes->notesNumber = $notesNumber + 1;
+			$balloon->chatTextNotes->layer = $layer + 2;
+			$balloon->chatTextNotes->notesNumber = $notesNumber + 2;
+			$res = $res . $balloon->chatImageNotes->printDefaultNotes();
+			$res = $res . $balloon->chatImageNotes->printImageNotes(0);
+			$res = $res . $balloon->chatImageNotes->printDefaultPrintNotes(1);
+			$res = $res . $balloon->chatCharactorIconNotes->printDefaultNotes();
+			$res = $res . $balloon->chatCharactorIconNotes->printImageNotes(0);
+			$res = $res . $balloon->chatCharactorIconNotes->printDefaultPrintNotes(1);
 			$res = $res . $balloon->chatTextNotes->printDefaultNotes();
 			$res = $res . $balloon->chatTextNotes->printImageTextNotes(0);
 			$res = $res . $balloon->chatTextNotes->printDefaultPrintNotes(1);
-			$notesNumber++;	
+			$balloon = $balloonSet->moveChatBalloon;
+			$balloon->chatImageNotes->layer = $layer;
+			$balloon->chatImageNotes->notesNumber = $notesNumber + 3;
+			$balloon->chatCharactorIconNotes->layer = $layer + 1;
+			$balloon->chatCharactorIconNotes->notesNumber = $notesNumber + 4;
+			$balloon->chatTextNotes->layer = $layer + 2;
+			$balloon->chatTextNotes->notesNumber = $notesNumber + 5;
+			$res = $res . $balloon->chatImageNotes->printDefaultNotes();
+			$res = $res . $balloon->chatImageNotes->printImageNotes(0);
+			$res = $res . $balloon->chatImageNotes->printDefaultPrintNotes(1);
+			$res = $res . $balloon->chatCharactorIconNotes->printDefaultNotes();
+			$res = $res . $balloon->chatCharactorIconNotes->printImageNotes(0);
+			$res = $res . $balloon->chatCharactorIconNotes->printDefaultPrintNotes(1);
+			$res = $res . $balloon->chatTextNotes->printDefaultNotes();
+			$res = $res . $balloon->chatTextNotes->printImageTextNotes(0);
+			$res = $res . $balloon->chatTextNotes->printDefaultPrintNotes(1);
+			$notesNumber = $notesNumber + 6;	
+			$layer = $layer + 3;
 		}
 		$res = mb_convert_encoding($res, 'SJIS-win', 'UTF-8');
 		fwrite($lineOutputFile, $res);
@@ -614,6 +669,7 @@ class CreateEXOController{
 		$imageNotes->xEnd = $xEnd;
 		$imageNotes->yEnd = $yEnd;
 		$imageNotes->file = $balloonPath;
+		$imageNotes->extendRate = "18.00";
 		$imageNotes->moveType = $imageNotes::MOVE_HIGH_LOW;
 		return $imageNotes;
 	}
@@ -641,6 +697,7 @@ class CreateEXOController{
 		$imageNotes->xEnd = $xEnd;
 		$imageNotes->yEnd = $yEnd;
 		$imageNotes->file = $iconPath;
+		$imageNotes->extendRate = "25.00";
 		$imageNotes->moveType = $imageNotes::MOVE_HIGH_LOW;
 		return $imageNotes;
 	}
@@ -674,16 +731,23 @@ class CreateEXOController{
 		return self::LINE_TEXT_X_POSITION_LEFT;
 	}
 
-	private function moveExistsBalloon($balloonArray, $height) {
+	private function moveExistsBalloon($balloonArray, $height, $balloonSet) {
 		$newBalloonArray = array();
+		$i=1;
 		foreach ($balloonArray as $balloonSet) {
+			if ($balloonSet->isCreated) {
+				continue;
+			}
 			$newBalloonSet = new ChatBalloonSet();
-			$newBalloonSet->setFixedBalloonByBeforeMoveBalloon($balloonSet->moveChatBalloon);
+			$newBalloonSet->setFixedBalloonByBeforeMoveBalloon($balloonSet->moveChatBalloon, $balloonSet);
 			if ($newBalloonSet->setMoveHeight($height)) {
+				$i++;
+				$balloonSet->isCreated = true;
+				$newBalloonSet->fixedChatBalloon->chatTextNotes->text .= $i;
 				$newBalloonArray[] = $newBalloonSet;
 			}
 		}
-		return array_merge($balloonArray, $newBalloonArray);
+		return $newBalloonArray;
 	}
 
 
@@ -692,5 +756,33 @@ class CreateEXOController{
 			$_SESSION["debugInfo"] = array();
 		}
 		$_SESSION["debugInfo"][] = $val;
+	}
+
+	private function getBalloonImagePath($length){
+		$lengthSet = array(Notes::MOVE_ROW_1,Notes::MOVE_ROW_2,Notes::MOVE_ROW_3,Notes::MOVE_ROW_4);
+		$pathKey = 0;
+		foreach ($lengthSet as $key => $len) {
+			if ($length == $len) {
+				$pathKey = $key;
+			}
+		}
+		if ($pathKey == 0) {
+			return $this->balloonPathArray[3][1];
+		}
+		foreach ($this->balloonPathArray as $balloonPath) {
+			if ($balloonPath[0] == $key) {
+				return $balloonPath[1];
+			}
+		}
+	}
+
+	private function getIconImagePath($charactor){
+		foreach($this->iconPathArray as $key => $value)
+		{
+			if($value[0] == $charactor)
+			{
+				return $value[2];
+			}
+		}
 	}
 }

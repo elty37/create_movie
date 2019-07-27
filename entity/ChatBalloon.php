@@ -19,6 +19,15 @@ class ChatBalloon {
 	/** @var TextNotes $chatTextNotes チャットテキストイメージNotes  */
 	public $chatTextNotes; 
 
+    function __clone()
+    {
+        // this->object のコピーを作成します。こうしないと、
+        // 同じオブジェクトを指すことになってしまいます。
+		$this->chatImageNotes = clone $this->chatImageNotes;
+		$this->chatCharactorIconNotes = clone $this->chatCharactorIconNotes;
+		$this->chatTextNotes = clone $this->chatTextNotes;
+    }
+
 	public function setMoveHeight($height) {
 		$this->chatImageNotes->setMoveHeight($height);
 		$this->chatCharactorIconNotes->setMoveHeight($height);
@@ -29,19 +38,18 @@ class ChatBalloon {
 		$this->chatImageNotes->yStart = $this->chatImageNotes->yEnd;
 		$this->chatCharactorIconNotes->yStart = $this->chatCharactorIconNotes->yEnd;
 		$this->chatTextNotes->yStart = $this->chatTextNotes->yEnd;
-		$this->chatImageNotes->yEnd = null;
-		$this->chatCharactorIconNotes->yEnd = null;
-		$this->chatTextNotes->yEnd = null;
+		$this->chatImageNotes->yEnd = $this->chatImageNotes->yEnd;
+		$this->chatCharactorIconNotes->yEnd = $this->chatCharactorIconNotes->yEnd;
+		$this->chatTextNotes->yEnd =  $this->chatTextNotes->yEnd;
 
 	}
-
-	public function setStart($start) {
+	public function setStart($start, $length) {
 		$this->chatImageNotes->start = $start;
 		$this->chatCharactorIconNotes->start = $start;
 		$this->chatTextNotes->start = $start;
-		$this->chatImageNotes->end = $start + 200;
-		$this->chatCharactorIconNotes->end = $start + 200;
-		$this->chatTextNotes->end = $start + 200;
+		$this->chatImageNotes->end = $start + $length;
+		$this->chatCharactorIconNotes->end = $start + $length;
+		$this->chatTextNotes->end = $start + $length;
 
 	}
 }

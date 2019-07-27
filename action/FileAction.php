@@ -63,6 +63,8 @@ class FileAction {
 				$lineOutputFile = fopen($c . "/tmp/out4.exo" ,"w+");
 				$lineArray = $controller->readXlsxCustom($readFile, 1, "B3:D200");
 				$lineConfigArray = $controller->readXlsxCustom($readFile, 1, "F3:G7");
+				$controller->setIconPath($readFile, 1, "F3:H7");
+				$controller->setBalloonPath($readFile, 1, "J3:K6");
 				$controller->writeLine($lineOutputFile, $lineArray, $lineConfigArray);
 				return array();
 			

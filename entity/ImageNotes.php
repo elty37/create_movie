@@ -11,8 +11,8 @@ class ImageNotes Extends Notes {
 	 * 画像の基本exo出力を返す
 	 * @return string 画像基本ノーツexo
 	 */
-	public function printImageNotes() {
-		return "[" . $this->notesNumber . ".0]\r\n_name=画像ファイル\r\nfile=" . $this->file . "\r\n";
+	public function printImageNotes($subNoteNumber) {
+		return "[" . $this->notesNumber . "." . $subNoteNumber . "]\r\n_name=画像ファイル\r\nfile=" . $this->file . "\r\n";
 	}
 		
 }
