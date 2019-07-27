@@ -579,7 +579,7 @@ class CreateEXOController{
 		$length = 200;
 		$textNote = new TextNotes();
 		$textNote->start = $start;
-		$textNote->end = $length + $start;
+		$textNote->end = $length + intval($start);
 		$textNote->layer = $layer;
 		$textNote->notesNumber = $notesNumber;
 		$textNote->xStart = $xStart;
@@ -595,7 +595,7 @@ class CreateEXOController{
 	 * ライン吹き出しノーツを生成
      * @param int $notesNumber ノーツ番号
 	 * @param string $start 開始フレーム
-	 * @param string $text テキスト
+	 * @param string $balloonPath 吹き出しのパス
 	 * @param string $layer レイヤ
 	 * @param string $xStart 初期値x座標
 	 * @param string $yStart 初期値y座標
@@ -622,7 +622,7 @@ class CreateEXOController{
 	 * ラインアイコンノーツを生成
      * @param int $notesNumber ノーツ番号
 	 * @param string $start 開始フレーム
-	 * @param string $text テキスト
+	 * @param string $iconPath アイコンのパス
 	 * @param string $layer レイヤ
 	 * @param string $xStart 初期値x座標
 	 * @param string $yStart 初期値y座標
@@ -633,7 +633,7 @@ class CreateEXOController{
 		$length = 200;
 		$imageNotes = new ImageNotes();
 		$imageNotes->start = $start;
-		$imageNotes->end = $length + $start;
+		$imageNotes->end = $length + intval($start);
 		$imageNotes->layer = $layer;
 		$imageNotes->notesNumber = $notesNumber;
 		$imageNotes->xStart = $xStart;
@@ -647,7 +647,7 @@ class CreateEXOController{
 	/**
 	 * ラインの左右位置を設定
 	 * @param string $charactor キャラ名
-	 * @param string $lineConfigArray 設定欄配列
+	 * @param array $lineConfigArray 設定欄配列
 	 * @param int $division ノーツ区分(0:文章, 1:アイコン, 2:吹き出し)
 	 * @return string 位置
 	 */
