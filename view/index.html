@@ -1,6 +1,81 @@
-<form method="post" action="./FrontController.php" enctype="multipart/form-data">
-	<p><input type="file" name="csvfile"></p>
-	<input type="hidden" name="actionId" value="001" />
-	<input type=submit name="send" value="send" />
-</form>
+<!doctype html>
+<html lang="ja">
+  <head>
+    <title>LULU Excelファイルアップロード</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="../frontend/js/upload.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Baloo+Bhai' rel='stylesheet' type='text/css'>
+    <link href="../frontend/css/main.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/earlyaccess/nicomoji.css" rel="stylesheet">
+      
+    <div class="login_info header">
+        <p>舞風　彩さんがログインしています。</p>
+        <p>権限：管理者</p>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-2 mx-sm-n3 global-navi">
+                <nav class="navbar navbar-dark bg-info">
+                  <a href="#" class="navbar-brand">Menu</a>
+                    <div class="navbar-collapse" id="navmenu1">
+                        <div class="navbar-nav">
+                          <a class="nav-item nav-link" href="#">Excelファイルのアップロード</a>
+                          <a class="nav-item nav-link" href="#">Excelファイルのダウンロード</a>
+                          <a class="nav-item nav-link" href="#">ワークフロー</a>
+                          <a class="nav-item nav-link manager_menu" href="#">ユーザの追加・編集・削除</a>
+                          <a class="nav-item nav-link manager_menu" href="#">新規ワークフローの作成</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-sm-10">
+                <div class="breadcrumb-area">
+                    <nav aria-label="パンくずリスト">
+                      <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">ホーム</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Excelファイルのアップロード</li>
+                      </ol>
+                    </nav>
+                </div>
+                <div class="mx-auto">
+                  <form method="post" action="./FrontController.php" enctype="multipart/form-data">
 
+                    <div class="col-sm">
+                        <div id="id-title">
+                                <h1>Excelファイルのアップロード</h1>
+                        </div>
+                        <div id="id-title">
+                        </div>
+                        <div class="form-group form-inline">
+                            <label>
+                                <span class="btn btn-primary">
+                                    ファイルを選択
+                                    <input type="file" name="csvfile" style="display:none">
+                                </span>
+                            </label>
+                            <div id="id-filename">
+
+                            </div>
+                    </div>
+                        <div class="form-group">
+                            <div class="form-input">
+                            <input class="btn btn-info" type=submit name="send" value="send" />
+                            <input type="hidden" name="actionId" value="001" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                </div>                
+            </div>
+        </div>
+    </div>
+</body>
+</html>
