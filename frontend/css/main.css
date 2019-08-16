@@ -3,7 +3,7 @@ body {
 }
 .login_header, .login_footer{
 }
-.global-navi, .breadcrumb-area, #id-title h1 {
+.global-navi, .breadcrumb-area, #id-title h1, .contant-title h2, .contant-title h1 {
     font-family: 'Baloo Bhai', 'Nico Moji', cursive;    
 }
 .navbar {
@@ -14,9 +14,12 @@ body {
 .navbar-nav a{
     text-align:center
 }
-#id-title h1 {
+#id-title h1, .contant-title h2, .contant-title h1 {
     color: #6594e0;
     border-bottom: dashed 2px #6594e0;
+}
+#id-title h1, .contant-title h1 {
+    margin-bottom: 20px;
 }
 .form-group span {
     font-family: 'Baloo Bhai', cursive;    
@@ -40,11 +43,19 @@ body {
     margin-bottom: inherit;
 }
 
-.btn, span {
+.btn, span, .row, .task_label, .task_value {
     font-family: 'Meiryo UI', cursive;    
 }
 .manager_menu {
     background-color:cadetblue;
 }
-
-
+.edit_area {
+    background-color: #fff;
+    height: 70vh;
+}
+svg {
+    margin-left: -1px;
+}
+.commentbtn{
+    text-align: right;
+}
